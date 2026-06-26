@@ -9,9 +9,6 @@ import sys
 
 from PyQt6.QtWidgets import QDialog, QMainWindow
 
-from ._rc.resource import qInitResources  # noqa: F401
-qInitResources()
-
 from .presets import CATPPUCCIN_FRAPPE as catppuccinTheme  # noqa: F401
 from .presets import DARK_THEME as darkTheme  # noqa: F401
 from .presets import LIGHT_THEME as lightTheme  # noqa: F401

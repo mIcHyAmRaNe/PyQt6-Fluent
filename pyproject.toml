@@ -47,7 +47,7 @@ include = ["pyqt_fluent*"]
 
 [tool.setuptools.package-data]
 "*" = ["*"]
-"pyqt_fluent._rc" = ["title_bar/*.svg", "*.qrc", "*.py"]
+"pyqt_fluent.resources" = ["icons/*.svg"]
 
 [tool.ruff]
 line-length = 100

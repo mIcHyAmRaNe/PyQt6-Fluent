@@ -219,5 +219,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Qt resource compiled output (generated)
-pyqt_fluent/_rc/resource.py
+

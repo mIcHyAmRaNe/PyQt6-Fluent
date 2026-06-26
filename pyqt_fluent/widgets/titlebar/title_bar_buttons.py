@@ -1,4 +1,5 @@
 from enum import Enum
+from importlib.resources import files as _resources
 
 from PyQt6.QtCore import QFile, QPointF, QRectF, Qt, pyqtProperty
 from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPen
@@ -215,7 +216,8 @@ class MaximizeButton(TitleBarButton):
 
 class CloseButton(SvgTitleBarButton):
     def __init__(self, parent=None):
-        super().__init__(":/pyqt_fluent/close.svg", parent)
+        icon_path = str(_resources("pyqt_fluent.resources").joinpath("icons", "close.svg"))
+        super().__init__(icon_path, parent)
         self._apply_close_overrides()
 
     def _apply_close_overrides(self):
