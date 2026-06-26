@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyqt6-fluent"
+version = "0.1.0"
+description = "Modern Windows frameless window for PyQt6 with advanced theming engine, acrylic/mica effects, and Win11 design language."
+readme = "README.md"
+requires-python = ">=3.14"
+license = {text = "MIT"}
+authors = [
+    {name = "Michy Amrane", email = "jgonx3osm@mozmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Desktop Environment :: Window Managers",
+    "Framework :: PyQt",
+]
+dependencies = [
+    "PyQt6>=6.3.1",
+    "pyqt6-webengine>=6.11.0",
+    "pywin32",
+]
+
+[project.urls]
+Homepage = "https://github.com/michyamrane/PyQt6-Fluent"
+Documentation = "https://github.com/michyamrane/PyQt6-Fluent/wiki"
+Repository = "https://github.com/michyamrane/PyQt6-Fluent.git"
+
+[project.optional-dependencies]
+webengine = ["PyQt6-WebEngine>=6.3.1"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.19",
+    "pytest>=7.0",
+    "pytest-qt>=4.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["pyqt_fluent*"]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
+"pyqt_fluent._rc" = ["title_bar/*.svg", "*.qrc", "*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
