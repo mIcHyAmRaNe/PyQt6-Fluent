@@ -74,23 +74,84 @@ class ComponentTokens:
     input_focus_border: str = "semantic.input_focus_border"
     input_placeholder: str = "semantic.input_placeholder"
 
-    # Button
-    button_primary: ControlState = field(
+    # ── Button family ────────────────────────────────────────────
+    button_standard: ControlState = field(
+        default_factory=lambda: ControlState(
+            rest="semantic.button_bg",
+            hover="semantic.button_bg_hover",
+            pressed="semantic.button_bg_pressed",
+            disabled="semantic.button_bg_disabled",
+        )
+    )
+    button_standard_fg: str = "semantic.control_fg"
+    button_standard_border: str = "semantic.button_border"
+    button_standard_border_accent: str = "semantic.button_border_accent"
+
+    button_accent: ControlState = field(
         default_factory=lambda: ControlState(
             rest="semantic.accent",
             hover="semantic.accent_hover",
-            pressed="semantic.accent",
+            pressed="semantic.accent_pressed",
+            disabled="semantic.accent",
         )
     )
-    button_primary_fg: str = "semantic.on_accent"
+    button_accent_fg: str = "semantic.on_accent"
+    button_accent_border: str = "palette.transparent"
 
-    button_standard: ControlState = field(
+    button_transparent: ControlState = field(
         default_factory=lambda: ControlState(
-            rest="semantic.surface_card",
-            hover="semantic.surface_alt",
-            pressed="semantic.surface",
+            rest="palette.transparent",
+            hover="semantic.hover",
+            pressed="semantic.pressed",
+            disabled="palette.transparent",
         )
     )
+    button_transparent_fg: str = "semantic.control_fg"
+    button_transparent_border: str = "palette.transparent"
+
+    button_text: ControlState = field(
+        default_factory=lambda: ControlState(
+            rest="palette.transparent",
+            hover="semantic.hover",
+            pressed="semantic.pressed",
+            disabled="palette.transparent",
+        )
+    )
+    button_text_fg: str = "semantic.accent"
+    button_text_border: str = "palette.transparent"
+
+    button_outlined: ControlState = field(
+        default_factory=lambda: ControlState(
+            rest="palette.transparent",
+            hover="semantic.hover",
+            pressed="semantic.pressed",
+            disabled="palette.transparent",
+        )
+    )
+    button_outlined_fg: str = "semantic.control_fg"
+    button_outlined_border: str = "semantic.button_border"
+
+    button_hyperlink: ControlState = field(
+        default_factory=lambda: ControlState(
+            rest="palette.transparent",
+            hover="semantic.hover",
+            pressed="semantic.pressed",
+            disabled="palette.transparent",
+        )
+    )
+    button_hyperlink_fg: str = "semantic.link"
+    button_hyperlink_border: str = "palette.transparent"
+
+    button_filled: ControlState = field(
+        default_factory=lambda: ControlState(
+            rest="semantic.control_bg",
+            hover="semantic.hover",
+            pressed="semantic.pressed",
+            disabled="semantic.control_bg",
+        )
+    )
+    button_filled_fg: str = "semantic.control_fg"
+    button_filled_border: str = "palette.transparent"
 
     # Dialog
     dialog_bg: str = "semantic.surface_dialog"
@@ -115,21 +176,31 @@ class ComponentTokens:
     button_height: int = 32
     button_padding_horizontal: int = 12
     button_padding_vertical: int = 4
+    button_radius: int = 5
 
     input_height: int = 32
     input_padding_horizontal: int = 8
     input_padding_vertical: int = 4
 
-    checkbox_size: int = 20
-    radio_button_size: int = 20
+    checkbox_size: int = 16
+    radio_button_size: int = 16
 
     slider_height: int = 4
     slider_handle_size: int = 16
+    slider_track: str = "palette.black_6"
+    slider_fill: str = "semantic.accent"
+    slider_thumb: str = "semantic.control_fg"
 
     scrollbar_width: int = 8
     scrollbar_handle_min_size: int = 24
 
-    # Shadow settings
+    # Switch
+    switch_width: int = 44
+    switch_height: int = 20
+    switch_thumb_size: int = 16
+    switch_track_off: str = "palette.black_8"
+    switch_track_on: str = "semantic.accent"
+    switch_thumb: str = "palette.white"
     shadow: str = "semantic.shadow"
     shadow_blur: float = 16.0
     shadow_offset_y: float = 4.0

@@ -134,12 +134,32 @@ class Palette:
     black: PaletteToken = _scale("#000000", "#000000", "black")
     transparent: PaletteToken = PaletteToken("transparent", QColor(0, 0, 0, 0), QColor(0, 0, 0, 0))
 
+    black_3: PaletteToken = PaletteToken("black_3", QColor(0, 0, 0, 8), QColor(0, 0, 0, 8))
+    black_4: PaletteToken = PaletteToken("black_4", QColor(0, 0, 0, 11), QColor(0, 0, 0, 11))
+    black_5: PaletteToken = PaletteToken("black_5", QColor(0, 0, 0, 13), QColor(0, 0, 0, 13))
+    black_6: PaletteToken = PaletteToken("black_6", QColor(0, 0, 0, 15), QColor(0, 0, 0, 15))
+    black_8: PaletteToken = PaletteToken("black_8", QColor(0, 0, 0, 21), QColor(0, 0, 0, 21))
     black_10: PaletteToken = PaletteToken("black_10", QColor(0, 0, 0, 26), QColor(0, 0, 0, 26))
     black_20: PaletteToken = PaletteToken("black_20", QColor(0, 0, 0, 51), QColor(0, 0, 0, 51))
     black_50: PaletteToken = PaletteToken("black_50", QColor(0, 0, 0, 128), QColor(0, 0, 0, 128))
     black_60: PaletteToken = PaletteToken("black_60", QColor(0, 0, 0, 153), QColor(0, 0, 0, 153))
+    white_3: PaletteToken = PaletteToken("white_3", QColor(255, 255, 255, 8), QColor(255, 255, 255, 8))
+    white_4: PaletteToken = PaletteToken("white_4", QColor(255, 255, 255, 11), QColor(255, 255, 255, 11))
+    white_5: PaletteToken = PaletteToken("white_5", QColor(255, 255, 255, 13), QColor(255, 255, 255, 13))
+    white_6: PaletteToken = PaletteToken("white_6", QColor(255, 255, 255, 15), QColor(255, 255, 255, 15))
+    white_8: PaletteToken = PaletteToken("white_8", QColor(255, 255, 255, 21), QColor(255, 255, 255, 21))
     white_10: PaletteToken = PaletteToken("white_10", QColor(255, 255, 255, 26), QColor(255, 255, 255, 26))
     white_20: PaletteToken = PaletteToken("white_20", QColor(255, 255, 255, 51), QColor(255, 255, 255, 51))
+
+    # WinUI 3 / Fluent 2 button colours (Common_themeresources_any.xaml)
+    # ControlFillColorDefault / Secondary / Tertiary / Disabled
+    btn_bg: PaletteToken = PaletteToken("btn_bg", QColor(255, 255, 255, 179), QColor(255, 255, 255, 15))
+    btn_bg_hover: PaletteToken = PaletteToken("btn_bg_hover", QColor(249, 249, 249, 128), QColor(255, 255, 255, 21))
+    btn_bg_pressed: PaletteToken = PaletteToken("btn_bg_pressed", QColor(249, 249, 249, 77), QColor(255, 255, 255, 8))
+    btn_bg_disabled: PaletteToken = PaletteToken("btn_bg_disabled", QColor(249, 249, 249, 77), QColor(255, 255, 255, 11))
+    # ControlStrokeColorDefault + ControlStrokeColorSecondary (for ControlElevationBorderBrush gradient)
+    btn_border: PaletteToken = PaletteToken("btn_border", QColor(0, 0, 0, 15), QColor(255, 255, 255, 18))
+    btn_border_accent: PaletteToken = PaletteToken("btn_border_accent", QColor(0, 0, 0, 41), QColor(255, 255, 255, 24))
 
     def token(self, path: str) -> PaletteToken:
         parts = path.split(".")

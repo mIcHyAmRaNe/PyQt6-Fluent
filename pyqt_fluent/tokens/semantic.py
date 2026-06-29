@@ -27,7 +27,7 @@ class SemanticPalette:
     surface: SemanticToken = field(default_factory=lambda: SemanticToken("surface", "gray.50", "gray.900"))
 
     # Surfaces
-    surface_alt: SemanticToken = field(default_factory=lambda: SemanticToken("surface_alt", "gray.100", "gray.800"))
+    surface_alt: SemanticToken = field(default_factory=lambda: SemanticToken("surface_alt", "gray.100", "gray.850"))
     surface_card: SemanticToken = field(default_factory=lambda: SemanticToken("surface_card", "white", "gray.800"))
     surface_dialog: SemanticToken = field(default_factory=lambda: SemanticToken("surface_dialog", "white", "gray.850"))
 
@@ -52,10 +52,20 @@ class SemanticPalette:
 
     # Borders
     border: SemanticToken = field(default_factory=lambda: SemanticToken("border", "gray.200", "gray.700"))
+    button_border: SemanticToken = field(default_factory=lambda: SemanticToken("button_border", "btn_border", "btn_border"))
+    button_border_accent: SemanticToken = field(default_factory=lambda: SemanticToken("button_border_accent", "btn_border_accent", "btn_border_accent"))
 
-    # Interactivity
-    hover: SemanticToken = field(default_factory=lambda: SemanticToken("hover", "black_10", "white_10"))
-    pressed: SemanticToken = field(default_factory=lambda: SemanticToken("pressed", "black_20", "white_20"))
+    # Button backgrounds (Win11 solid colours)
+    button_bg: SemanticToken = field(default_factory=lambda: SemanticToken("button_bg", "btn_bg", "btn_bg"))
+    button_bg_hover: SemanticToken = field(default_factory=lambda: SemanticToken("button_bg_hover", "btn_bg_hover", "btn_bg_hover"))
+    button_bg_pressed: SemanticToken = field(default_factory=lambda: SemanticToken("button_bg_pressed", "btn_bg_pressed", "btn_bg_pressed"))
+    button_bg_disabled: SemanticToken = field(default_factory=lambda: SemanticToken("button_bg_disabled", "btn_bg_disabled", "btn_bg_disabled"))
+
+    # Interactivity — Win11 precise fill values
+    hover: SemanticToken = field(default_factory=lambda: SemanticToken("hover", "black_8", "white_8"))
+    pressed: SemanticToken = field(default_factory=lambda: SemanticToken("pressed", "black_3", "white_3"))
+    subtle_fill: SemanticToken = field(default_factory=lambda: SemanticToken("subtle_fill", "black_6", "white_6"))
+    subtle_fill_disabled: SemanticToken = field(default_factory=lambda: SemanticToken("subtle_fill_disabled", "black_4", "white_4"))
     selected_bg: SemanticToken = field(default_factory=lambda: SemanticToken("selected_bg", "blue.100", "blue.800"))
     selected_fg: SemanticToken = field(default_factory=lambda: SemanticToken("selected_fg", "blue.900", "blue.50"))
 
@@ -86,6 +96,7 @@ class SemanticPalette:
     # ── Brand family: accent ───────────────────────────────────────
     accent: SemanticToken = field(default_factory=lambda: SemanticToken("accent", "blue.600", "blue.400"))
     accent_hover: SemanticToken = field(default_factory=lambda: SemanticToken("accent_hover", "blue.700", "blue.300"))
+    accent_pressed: SemanticToken = field(default_factory=lambda: SemanticToken("accent_pressed", "blue.800", "blue.500"))
     on_accent: SemanticToken = field(default_factory=lambda: SemanticToken("on_accent", "white", "white"))
 
     # ── Close button (special — always red) ────────────────────────

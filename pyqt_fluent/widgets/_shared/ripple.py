@@ -1,11 +1,11 @@
 """Ripple effect — Material-like click ripple animation."""
 
-from PyQt6.QtCore import QPointF, QPropertyAnimation, QRectF, QEasingCurve, pyqtProperty
+from PyQt6.QtCore import QObject, QPointF, QPropertyAnimation, QRectF, QEasingCurve, pyqtProperty
 from PyQt6.QtGui import QColor, QPainter, QRadialGradient
 from PyQt6.QtWidgets import QWidget
 
 
-class RippleEffect:
+class RippleEffect(QObject):
     """Click ripple animation helper.
 
     Usage in paintEvent:
@@ -13,11 +13,12 @@ class RippleEffect:
     """
 
     def __init__(self, parent: QWidget, color: QColor = QColor(255, 255, 255, 80)):
+        super().__init__(parent)
         self._parent = parent
         self._color = color
         self._radius = 0.0
         self._origin = QPointF()
-        self._anim = QPropertyAnimation(self, b"radius")
+        self._anim = QPropertyAnimation(self, b"radius", self)
         self._anim.setDuration(400)
         self._anim.setEasingCurve(QEasingCurve.Type.OutCubic)
 

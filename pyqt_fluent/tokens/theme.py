@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import weakref
 from abc import abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
@@ -75,7 +76,7 @@ class ThemeManager(QObject):
     def __init__(self, parent: QObject | None = None):
         super().__init__(parent)
         self._theme: ThemeDefinition = ThemeDefinition()
-        self._observers: list[ThemeObserver] = []
+        self._observers: weakref.WeakSet = weakref.WeakSet()
 
     @classmethod
     def instance(cls) -> ThemeManager:
@@ -105,7 +106,7 @@ class ThemeManager(QObject):
             try:
                 obs.on_theme_changed(theme)
             except RuntimeError:
-                self._observers.remove(obs)
+                pass  # C++ wrapper alive but Qt object destroyed
 
     def set_light_theme(self) -> None:
         import dataclasses
@@ -132,12 +133,7 @@ class ThemeManager(QObject):
         return self._theme.resolve(path)
 
     def register_observer(self, observer: ThemeObserver) -> None:
-        if observer not in self._observers:
-            self._observers.append(observer)
-
-    def unregister_observer(self, observer: ThemeObserver) -> None:
-        if observer in self._observers:
-            self._observers.remove(observer)
+        self._observers.add(observer)
 
     def generate_stylesheet(self) -> str:
         t = self._theme

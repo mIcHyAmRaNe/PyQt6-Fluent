@@ -141,6 +141,19 @@ class StylesheetEngine:
         """Generate QSS for many widget types at once."""
         return {wt: self.generate(wt) for wt in widget_types}
 
+    # --- one-shot from theme (for ThemeAwareWidget) ---
+
+    @classmethod
+    def for_role(cls, role: str, theme: ThemeDefinition) -> str:
+        """Build QSS for a *role* string from a ``ThemeDefinition``.
+
+        ``role`` can be any key registered in ``_BUILT_INS`` (e.g. ``"QPushButton"``)
+        or previously registered via ``register()``.
+        """
+        r = theme.resolver()
+        engine = cls(r, theme.typography)
+        return engine.generate(role)
+
 
 _BUILT_INS: dict[str, str] = {
     "QWidget": "", # Base has enough

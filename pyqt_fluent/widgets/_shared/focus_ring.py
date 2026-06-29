@@ -1,6 +1,6 @@
 """Focus ring — rounded rectangle focus indicator matching Win11 style."""
 
-from PyQt6.QtCore import QRectF
+from PyQt6.QtCore import Qt, QRectF
 from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPen
 
 
@@ -14,7 +14,7 @@ class FocusRing:
         pen = QPen(color, width)
         pen.setCosmetic(True)
         painter.setPen(pen)
-        painter.setBrush(Qt.GlobalColor.transparent)  # type: ignore[attr-defined]
+        painter.setBrush(Qt.BrushStyle.NoBrush)
         path = QPainterPath()
         r = rect.adjusted(width / 2, width / 2, -width / 2, -width / 2)
         path.addRoundedRect(r, radius, radius)

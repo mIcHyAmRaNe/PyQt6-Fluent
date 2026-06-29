@@ -19,7 +19,34 @@ from .tokens.semantic import SemanticPalette  # noqa: F401
 from .tokens.theme import ThemeDefinition, ThemeManager, ThemeObserver  # noqa: F401
 from .tokens.typography import Typography  # noqa: F401
 from .utils import start_system_move, toggle_max_state  # noqa: F401
-from .widgets._shared import FocusRing, RippleEffect, DropShadow, IconWidget  # noqa: F401
+from .widgets._shared import (  # noqa: F401
+    BackgroundAnimationWidget,
+    DropShadow,
+    FocusRing,
+    IconWidget,
+    RippleEffect,
+    ThemeAwareWidget,
+    TranslateYAnimation,
+)
+from .widgets.buttons import (  # noqa: F401
+    Button,
+    ButtonBase,
+    Switch,
+    # Legacy aliases
+    AccentButton,
+    FilledButton,
+    HyperlinkButton,
+    OutlinedButton,
+    PushButton,
+    TextButton,
+    ToggleButton,
+    TransparentButton,
+)
+from .widgets.selection import CheckBox, RadioButton  # noqa: F401
+from .widgets.feedback import Badge, ProgressBar, Spinner  # noqa: F401
+from .widgets.inputs import Input, Rating, SearchBox, Slider, Tag, Textarea  # noqa: F401
+from .widgets.layout import Card, Divider  # noqa: F401
+from .widgets.text import FluentLabel  # noqa: F401
 from .widgets.titlebar import StandardTitleBar, TitleBar, TitleBarBase  # noqa: F401
 from .widgets.titlebar.title_bar_buttons import (  # noqa: F401
     CloseButton,
@@ -73,6 +100,9 @@ __all__ = [
     "FramelessMainWindow",
     "AcrylicWindow",
     "WindowEffect",
+    "ThemeAwareWidget",
+    "BackgroundAnimationWidget",
+    "TranslateYAnimation",
     "TitleBar",
     "TitleBarBase",
     "StandardTitleBar",
@@ -81,6 +111,31 @@ __all__ = [
     "MinimizeButton",
     "MaximizeButton",
     "CloseButton",
+    "Button",
+    "ButtonBase",
+    "PushButton",
+    "AccentButton",
+    "TransparentButton",
+    "TextButton",
+    "OutlinedButton",
+    "HyperlinkButton",
+    "FilledButton",
+    "Switch",
+    "ToggleButton",
+    "Input",
+    "Rating",
+    "SearchBox",
+    "Slider",
+    "Tag",
+    "Textarea",
+    "CheckBox",
+    "RadioButton",
+    "Badge",
+    "ProgressBar",
+    "Spinner",
+    "Card",
+    "Divider",
+    "FluentLabel",
     "start_system_move",
     "toggle_max_state",
     "lightTheme",

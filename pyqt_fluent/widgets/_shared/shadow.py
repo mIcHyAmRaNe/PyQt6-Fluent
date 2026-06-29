@@ -1,6 +1,6 @@
 """Drop shadow — anti-aliased shadow rendered in paintEvent."""
 
-from PyQt6.QtCore import QRectF
+from PyQt6.QtCore import Qt, QRectF
 from PyQt6.QtGui import QColor, QPainter, QPainterPath
 
 
@@ -20,7 +20,7 @@ class DropShadow:
         for i in range(spread, 0, -1):
             alpha = int(color.alpha() * (1.0 - i / (spread + 1)))
             c = QColor(color.red(), color.green(), color.blue(), alpha)
-            painter.setPen(Qt.PenStyle.NoPen)  # type: ignore[attr-defined]
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(c)
             margin = spread - i + 1
             r = rect.adjusted(-margin + x, -margin + y, margin + x, margin + y)
