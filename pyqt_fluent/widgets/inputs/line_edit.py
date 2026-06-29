@@ -1,10 +1,33 @@
 from __future__ import annotations
 
-from PyQt6.QtGui import QColor
+from importlib.resources import files as _resources
+
+from PyQt6.QtCore import QFile
+from PyQt6.QtGui import QColor, QIcon, QPainter, QPixmap
+from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QLineEdit, QSizePolicy
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
+
+
+def _make_colored_icon(svg_path: str, color: QColor, size: int = 20) -> QIcon:
+    f = QFile(svg_path)
+    if not f.open(QFile.OpenModeFlag.ReadOnly):
+        return QIcon()
+    data = f.readAll()
+    f.close()
+
+    pix = QPixmap(size, size)
+    pix.fill(QColor(0, 0, 0, 0))
+    renderer = QSvgRenderer(data)
+    painter = QPainter(pix)
+    renderer.render(painter)
+    painter.setCompositionMode(
+        QPainter.CompositionMode.CompositionMode_SourceIn)
+    painter.fillRect(pix.rect(), color)
+    painter.end()
+    return QIcon(pix)
 
 
 class Input(ThemeAwareWidget, QLineEdit):
@@ -64,9 +87,11 @@ class SearchBox(ThemeAwareWidget, QLineEdit):
         self.setFixedHeight(32)
         self.setClearButtonEnabled(True)
 
-        from PyQt6.QtGui import QAction, QIcon
+        p = _resources("pyqt_fluent.resources").joinpath("icons", "Search_filled.svg")
+        self._search_svg_path = str(p)
+
+        from PyQt6.QtGui import QAction
         self._search_action = QAction(self)
-        self._search_action.setIcon(QIcon())
         self.addAction(self._search_action, QLineEdit.ActionPosition.LeadingPosition)
 
         self._init_theme_aware()
@@ -79,13 +104,17 @@ class SearchBox(ThemeAwareWidget, QLineEdit):
         focus_border = r.color("component.input_focus_border")
         placeholder = r.color("component.input_placeholder")
         radius = r.int("component.control_radius")
+
+        self._search_action.setIcon(
+            _make_colored_icon(self._search_svg_path, fg, 20))
+
         qss = f"""
 SearchBox {{
     background-color: {bg.name(QColor.NameFormat.HexArgb)};
     color: {fg.name()};
     border: 1px solid {border.name(QColor.NameFormat.HexArgb)};
     border-radius: {radius}px;
-    padding: 0 8px 0 32px;
+    padding: 0 8px;
     font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-size: 14px;
 }}
@@ -100,3 +129,4 @@ SearchBox::placeholder {{
 }}
 """
         self.setStyleSheet(qss)
+

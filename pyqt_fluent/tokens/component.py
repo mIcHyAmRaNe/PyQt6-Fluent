@@ -208,3 +208,98 @@ class ComponentTokens:
     # Scrollbar tokens (referenced from semantic)
     scrollbar_bg: str = "semantic.scrollbar_bg"
     scrollbar_fg: str = "semantic.scrollbar_fg"
+
+    # ── ComboBox ──────────────────────────────────────────
+    combobox_bg: str = "semantic.input_bg"
+    combobox_fg: str = "semantic.on_surface"
+    combobox_border: str = "semantic.input_border"
+    combobox_focus_border: str = "semantic.input_focus_border"
+    combobox_dropdown_bg: str = "semantic.surface_dialog"
+    combobox_item_hover: str = "semantic.hover"
+    combobox_item_selected: str = "semantic.selected_bg"
+    combobox_item_selected_fg: str = "semantic.selected_fg"
+    combobox_arrow: str = "semantic.control_fg"
+
+    # ── DatePicker / TimePicker ───────────────────────────
+    picker_bg: str = "semantic.input_bg"
+    picker_fg: str = "semantic.on_surface"
+    picker_border: str = "semantic.input_border"
+    picker_focus_border: str = "semantic.input_focus_border"
+    picker_popup_bg: str = "semantic.surface_dialog"
+    picker_header_bg: str = "semantic.accent"
+    picker_header_fg: str = "semantic.on_accent"
+    picker_day_hover: str = "semantic.hover"
+    picker_day_selected_bg: str = "semantic.accent"
+    picker_day_selected_fg: str = "semantic.on_accent"
+    picker_day_today_border: str = "semantic.accent"
+
+    # ── NumberBox ─────────────────────────────────────────
+    numberbox_bg: str = "semantic.input_bg"
+    numberbox_fg: str = "semantic.on_surface"
+    numberbox_border: str = "semantic.input_border"
+    numberbox_focus_border: str = "semantic.input_focus_border"
+    numberbox_button_bg: str = "semantic.button_bg"
+    numberbox_button_hover: str = "semantic.button_bg_hover"
+    numberbox_button_pressed: str = "semantic.button_bg_pressed"
+
+    # ── TabView ───────────────────────────────────────────
+    tab_bg: str = "palette.transparent"
+    tab_selected_bg: str = "semantic.surface_card"
+    tab_hover_bg: str = "semantic.hover"
+    tab_fg: str = "semantic.on_surface"
+    tab_selected_fg: str = "semantic.on_surface"
+    tab_border: str = "semantic.border"
+    tab_bar_bg: str = "palette.transparent"
+    tab_close_hover: str = "semantic.hover"
+
+    # ── Expander ──────────────────────────────────────────
+    expander_header_bg: str = "palette.transparent"
+    expander_header_hover: str = "semantic.hover"
+    expander_content_bg: str = "palette.transparent"
+    expander_arrow: str = "semantic.control_fg"
+    expander_border: str = "semantic.border"
+
+    # ── InfoBar / Toast ───────────────────────────────────
+    infobar_border: str = "semantic.border"
+    infobar_info_bg: str = "semantic.info_bg"
+    infobar_info_fg: str = "semantic.on_surface"
+    infobar_success_bg: str = "semantic.success_bg"
+    infobar_success_fg: str = "semantic.on_surface"
+    infobar_warning_bg: str = "semantic.warning_bg"
+    infobar_warning_fg: str = "semantic.on_surface"
+    infobar_danger_bg: str = "semantic.danger_bg"
+    infobar_danger_fg: str = "semantic.on_surface"
+
+    # ── Tooltip ───────────────────────────────────────────
+    tooltip_bg: str = "semantic.surface_dialog"
+    tooltip_fg: str = "semantic.on_surface"
+
+    # ── Avatar / PersonPicture ────────────────────────────
+    avatar_bg: str = "semantic.accent"
+    avatar_fg: str = "semantic.on_accent"
+
+    # ── CommandBar ────────────────────────────────────────
+    commandbar_bg: str = "semantic.surface_card"
+    commandbar_fg: str = "semantic.control_fg"
+    commandbar_item_hover: str = "semantic.hover"
+    commandbar_item_pressed: str = "semantic.pressed"
+    commandbar_border: str = "semantic.border"
+    commandbar_separator: str = "semantic.border"
+
+    # ── NavigationView ────────────────────────────────────
+    nav_bg: str = "semantic.surface_alt"
+    nav_fg: str = "semantic.on_surface"
+    nav_item_hover: str = "semantic.hover"
+    nav_item_pressed: str = "semantic.pressed"
+    nav_selected_bg: str = "semantic.selected_bg"
+    nav_selected_fg: str = "semantic.selected_fg"
+    nav_border: str = "semantic.border"
+    nav_width: int = 240
+    nav_collapsed_width: int = 48
+    nav_header_height: int = 48
+    nav_item_height: int = 36
+
+    # ── ContentDialog ─────────────────────────────────────
+    contentdialog_bg: str = "semantic.surface_dialog"
+    contentdialog_overlay: str = "semantic.overlay"
+    contentdialog_radius: int = 8

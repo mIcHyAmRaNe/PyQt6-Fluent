@@ -12,13 +12,22 @@ from PyQt6.QtWidgets import (
 )
 
 from pyqt_fluent import (
+    Avatar,
     Badge,
     Button,
     Card,
     CheckBox,
+    ComboBox,
+    ContentDialog,
+    DatePicker,
     Divider,
+    Expander,
     FluentLabel,
+    FluentTooltip,
+    InfoBar,
     Input,
+    NavigationView,
+    NumberBox,
     ProgressBar,
     RadioButton,
     Rating,
@@ -26,11 +35,13 @@ from pyqt_fluent import (
     Slider,
     Spinner,
     Switch,
+    TabView,
     Tag,
     Textarea,
     ThemeAwareWidget,
     ThemeDefinition,
     ThemeManager,
+    TimePicker,
     ToggleButton,
 )
 from pyqt_fluent.utils.theme import Theme, system_theme
@@ -167,6 +178,46 @@ class Demo(ThemeAwareWidget, QWidget):
             cl.addWidget(FluentLabel("Content goes here", "caption"))
             grid.addWidget(card)
         layout.addLayout(grid)
+
+        # ── Section: Navigation ──
+        layout.addWidget(Divider())
+        layout.addWidget(FluentLabel("Navigation", "subtitle"))
+        row_nav = QHBoxLayout()
+        cb = ComboBox()
+        cb.addItems(["Option A", "Option B", "Option C"])
+        row_nav.addWidget(cb)
+        row_nav.addWidget(DatePicker())
+        row_nav.addWidget(TimePicker())
+        row_nav.addWidget(NumberBox())
+        row_nav.addStretch()
+        layout.addLayout(row_nav)
+
+        # TabView
+        tabs = TabView()
+        tabs.addTab(QWidget(), "Home")
+        tabs.addTab(QWidget(), "Settings")
+        layout.addWidget(tabs)
+
+        # ── Section: Misc Widgets ──
+        layout.addWidget(Divider())
+        layout.addWidget(FluentLabel("Misc", "subtitle"))
+        row_misc = QHBoxLayout()
+        row_misc.addWidget(Avatar("JD", 40))
+        row_misc.addWidget(Avatar("MK", 32))
+        row_misc.addWidget(Avatar("A", 28))
+        row_misc.addStretch()
+        layout.addLayout(row_misc)
+
+        # Expander
+        exp = Expander("Show Details")
+        exp.set_content(FluentLabel("Hidden content here"))
+        layout.addWidget(exp)
+
+        # InfoBar
+        layout.addWidget(InfoBar("This is an info message", "info"))
+        layout.addWidget(InfoBar("Operation successful!", "success"))
+        layout.addWidget(InfoBar("Warning: check your input", "warning"))
+        layout.addWidget(InfoBar("Error occurred", "danger"))
 
         # ── Theme toggle ──
         layout.addWidget(Divider())
