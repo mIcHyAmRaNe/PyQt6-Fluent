@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
-from PyQt6.QtCore import Qt, QRectF
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QPen, QFont, QPixmap
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSizePolicy
+from PyQt6.QtCore import QRectF, Qt
+from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath, QPen, QPixmap
+from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QSizePolicy, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
@@ -79,7 +79,7 @@ class _CommandBarButton(ThemeAwareWidget, QPushButton):
             painter.drawPixmap(ix, iy, pix)
             text_r = QRectF(ix + sz + 6, r.y(), r.width() - (ix + sz + 6 - r.x()), r.height())
 
-        painter.drawText(text_r, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.text())
+        painter.drawText(text_r, Qt.AlignmentFlag.AlignCenter, self.text())
 
 
 class _Separator(QWidget):

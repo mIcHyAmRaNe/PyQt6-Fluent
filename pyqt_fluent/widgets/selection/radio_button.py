@@ -5,7 +5,8 @@ from __future__ import annotations
 from enum import Enum
 from importlib.resources import files as _resources
 
-from PyQt6.QtCore import QByteArray, QFile, QPointF, QRectF, QSize, Qt
+from PyQt6.QtCore import (QByteArray, QEasingCurve, QFile, QPointF,
+                           QPropertyAnimation, QRectF, QSize, Qt, pyqtProperty)
 from PyQt6.QtGui import QBrush, QColor, QFontMetrics, QPainter, QPen
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QAbstractButton, QSizePolicy
@@ -13,7 +14,6 @@ from PyQt6.QtXml import QDomDocument
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.focus_ring import FocusRing
-from .._shared.ripple import RippleEffect
 from .._shared.theme_aware import ThemeAwareWidget
 
 _RING_SIZE = 16
@@ -83,13 +83,19 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
         self.setText(text)
         self.setCheckable(True)
         self.setAutoExclusive(True)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setMouseTracking(True)
+        self.setFocusPolicy(Qt.FocusPolicy.TabFocus)
         self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self._hovered = False
         self._pressed = False
         self._focus_color = QColor()
+        self._scale = 1.0
+        self._scale_ani = QPropertyAnimation(self, b"ring_scale", self)
+        self._scale_ani.setDuration(83)
+        e = QEasingCurve(QEasingCurve.Type.BezierSpline)
+        e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
+        self._scale_ani.setEasingCurve(e)
 
         # checked colour override (per-theme)
         self._light_checked = QColor()
@@ -108,10 +114,20 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
         self._disabled_border = QColor()
         self._disabled_bg = QColor()
 
-        self._ripple = RippleEffect(self)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet("RadioButton { background: transparent; border: none; }")
         self._init_theme_aware()
+
+    # ── press animation ──────────────────────────────────────
+
+    def _get_ring_scale(self) -> float:
+        return self._scale
+
+    def _set_ring_scale(self, v: float) -> None:
+        self._scale = v
+        self.update()
+
+    ring_scale = pyqtProperty(float, _get_ring_scale, _set_ring_scale)
 
     # ── public API ──────────────────────────────────────────
 
@@ -219,25 +235,39 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
     # ── events ──────────────────────────────────────────────
 
     def enterEvent(self, e):
-        self._hovered = True
-        self.update()
         super().enterEvent(e)
 
     def leaveEvent(self, e):
         self._hovered = False
         self._pressed = False
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         self.update()
         super().leaveEvent(e)
+
+    def mouseMoveEvent(self, e):
+        over = self._ring_rect().contains(e.position())
+        self.setCursor(Qt.CursorShape.PointingHandCursor if over else Qt.CursorShape.ArrowCursor)
+        if over != self._hovered:
+            self._hovered = over
+            self.update()
+        super().mouseMoveEvent(e)
 
     def mousePressEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton and self._ring_rect().contains(e.position()):
             self._pressed = True
-            self._ripple.start(e.position())
+            self._scale_ani.stop()
+            self._scale_ani.setStartValue(self._scale)
+            self._scale_ani.setEndValue(0.85)
+            self._scale_ani.start()
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton:
             self._pressed = False
+            self._scale_ani.stop()
+            self._scale_ani.setStartValue(self._scale)
+            self._scale_ani.setEndValue(1.0)
+            self._scale_ani.start()
         super().mouseReleaseEvent(e)
 
     # ── paint ───────────────────────────────────────────────
@@ -248,6 +278,13 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
 
         ring = self._ring_rect()
         s = self._state()
+
+        if self._scale < 1.0:
+            painter.save()
+            centre = ring.center()
+            painter.translate(centre)
+            painter.scale(self._scale, self._scale)
+            painter.translate(-centre)
 
         from ...tokens.theme import ThemeManager
         tm = ThemeManager.instance()
@@ -277,6 +314,9 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
 
         painter.setOpacity(1.0)
 
+        if self._scale < 1.0:
+            painter.restore()
+
         # ── label ───────────────────────────────────────────
         txt_color = self._text_color(r, theme)
         painter.setPen(txt_color)
@@ -285,10 +325,9 @@ class RadioButton(ThemeAwareWidget, QAbstractButton):
         align = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         painter.drawText(r_, align, self.text())
 
-        # ── ripple & focus ──────────────────────────────────
-        self._ripple.paint(painter, QRectF(self.rect()))
+        # ── focus ──────────────────────────────────────────
         if self.hasFocus():
-            FocusRing.paint(painter, QRectF(self.rect()), self._focus_color)
+            FocusRing.paint(painter, self._ring_rect(), self._focus_color)
 
     def _text_color(self, r, theme: ThemeDefinition) -> QColor:
         if self._light_text.isValid() or self._dark_text.isValid():

@@ -5,9 +5,11 @@ from .theme import Theme, is_dark, is_light, system_theme  # noqa: F401
 
 if sys.platform == "win32":
     from .win32_utils import (
-        WindowsMoveResize as MoveResize,
         ScreenCaptureFilter,
         get_system_accent_color,
+    )
+    from .win32_utils import (
+        WindowsMoveResize as MoveResize,
     )
 elif sys.platform == "darwin":
     try:

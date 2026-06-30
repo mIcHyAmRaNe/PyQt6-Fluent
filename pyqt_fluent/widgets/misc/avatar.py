@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRectF, QSize
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QFont
-from PyQt6.QtWidgets import QWidget, QSizePolicy
+from PyQt6.QtCore import QRectF, Qt
+from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath
+from PyQt6.QtWidgets import QSizePolicy, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
 
 
 class Avatar(ThemeAwareWidget, QWidget):
-    def __init__(self, parent=None, text="", size=40, bg_color=None, fg_color=None):
+    def __init__(self, text="", size=40, parent=None, bg_color=None, fg_color=None):
         super().__init__(parent)
         self._text = text
         self._size = size

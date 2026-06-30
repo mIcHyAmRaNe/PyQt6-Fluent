@@ -43,7 +43,10 @@ class FluentLabel(ThemeAwareWidget, QLabel):
 
     def on_theme_applied(self, theme: ThemeDefinition) -> None:
         r = theme.resolver()
-        self._fg = r.color("component.content_fg")
+        if self._preset in ("caption",):
+            self._fg = r.color("semantic.on_surface_muted")
+        else:
+            self._fg = r.color("component.content_fg")
         self._apply_font()
         self.setStyleSheet(f"""
 FluentLabel {{

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRectF, pyqtSignal
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QPen, QFont
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
+from PyQt6.QtCore import QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath, QPen
+from PyQt6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
@@ -11,7 +11,7 @@ from .._shared.theme_aware import ThemeAwareWidget
 class Expander(ThemeAwareWidget, QWidget):
     expanded_changed = pyqtSignal(bool)
 
-    def __init__(self, parent=None, title="", bg_color=None, fg_color=None,
+    def __init__(self, title="", parent=None, bg_color=None, fg_color=None,
                  header_hover=None, border_color=None, arrow_color=None):
         super().__init__(parent)
         self._title = title
@@ -43,6 +43,12 @@ class Expander(ThemeAwareWidget, QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.setMouseTracking(True)
         self._init_theme_aware()
+
+    def minimumSizeHint(self):
+        return QSize(0, self._header_height)
+
+    def sizeHint(self):
+        return QSize(0, self._header_height)
 
     def set_title(self, text: str):
         self._title = text

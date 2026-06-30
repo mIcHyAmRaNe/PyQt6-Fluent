@@ -1,6 +1,6 @@
 """Drop shadow — anti-aliased shadow rendered in paintEvent."""
 
-from PyQt6.QtCore import Qt, QRectF
+from PyQt6.QtCore import QRectF, Qt
 from PyQt6.QtGui import QColor, QPainter, QPainterPath
 
 

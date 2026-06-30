@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRectF, QPropertyAnimation, QEasingCurve, pyqtProperty
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QPen
+from PyQt6.QtCore import QEasingCurve, QPointF, QPropertyAnimation, QRectF, Qt, pyqtProperty
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QAbstractButton, QSizePolicy
 
+
+def _winui_easing() -> QEasingCurve:
+    """WinUI 3 FastOutSlowIn — cubic-bezier(0.1, 0.9, 0.2, 1.0)."""
+    e = QEasingCurve(QEasingCurve.Type.BezierSpline)
+    e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
+    return e
+
 from ...tokens.theme import ThemeDefinition
-from .._shared.theme_aware import ThemeAwareWidget
 from .._shared.background_animation import BackgroundAnimationWidget
+from .._shared.theme_aware import ThemeAwareWidget
 
 
 class Switch(BackgroundAnimationWidget, ThemeAwareWidget, QAbstractButton):
@@ -14,8 +21,7 @@ class Switch(BackgroundAnimationWidget, ThemeAwareWidget, QAbstractButton):
     switch_height: int = 20
     switch_thumb_size: int = 16
 
-    def __init__(self, parent=None,
-                 track_on=None, track_off=None, thumb_color=None):
+    def __init__(self, parent=None, track_on=None, track_off=None, thumb_color=None):
         super().__init__(parent)
         self.setCheckable(True)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -31,8 +37,8 @@ class Switch(BackgroundAnimationWidget, ThemeAwareWidget, QAbstractButton):
         self._thumb_pos = 0.0
 
         self._pos_ani = QPropertyAnimation(self, b"thumb_pos", self)
-        self._pos_ani.setDuration(150)
-        self._pos_ani.setEasingCurve(QEasingCurve.Type.OutQuad)
+        self._pos_ani.setDuration(167)
+        self._pos_ani.setEasingCurve(_winui_easing())
 
         self._theme_applied = False
         self._init_theme_aware()
@@ -49,12 +55,21 @@ class Switch(BackgroundAnimationWidget, ThemeAwareWidget, QAbstractButton):
 
     def on_theme_applied(self, theme: ThemeDefinition) -> None:
         r = theme.resolver()
-        self._track_off = (self._custom_track_off if self._custom_track_off
-                           else r.color("component.switch_track_off"))
-        self._track_on = (self._custom_track_on if self._custom_track_on
-                          else r.color("component.switch_track_on"))
-        self._thumb = (self._custom_thumb if self._custom_thumb
-                       else r.color("component.switch_thumb"))
+        if self._custom_track_off:
+            self._track_off = QColor(self._custom_track_off)
+        else:
+            if theme.is_dark:
+                self._track_off = QColor(255, 255, 255, 77)
+            else:
+                base = r.color("component.switch_track_off")
+                self._track_off = QColor(base.red(), base.green(), base.blue(), 77)
+        self._track_on = (
+            self._custom_track_on if self._custom_track_on else r.color("component.switch_track_on")
+        )
+        if self._custom_thumb:
+            self._thumb = QColor(self._custom_thumb)
+        else:
+            self._thumb = r.color("component.switch_thumb")
         self._bg_ani.stop()
         self._animated_bg = self._target_bg()
         self.update()
@@ -92,8 +107,11 @@ class Switch(BackgroundAnimationWidget, ThemeAwareWidget, QAbstractButton):
         track_rect = QRectF(0, 0, self.switch_width, h)
         track_r = h / 2.0
 
-        bg = (self._animated_bg if self._bg_ani.state() == self._bg_ani.State.Running
-              else self._target_bg())
+        bg = (
+            self._animated_bg
+            if self._bg_ani.state() == self._bg_ani.State.Running
+            else self._target_bg()
+        )
 
         # Track
         path = QPainterPath()

@@ -25,8 +25,8 @@ setuptools.setup(
     },
     include_package_data=True,
     install_requires=[
-        "pywin32",
         "PyQt6>=6.3.1",
+        "win32more>=0.0.1",
     ],
     extras_require={
         "webengine": ["PyQt6-WebEngine>=6.3.1"],

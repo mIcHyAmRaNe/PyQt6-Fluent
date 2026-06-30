@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRectF, QTimer, QPoint
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QFont, QPen
-from PyQt6.QtWidgets import QWidget, QApplication
+from PyQt6.QtCore import QPoint, QRectF, Qt, QTimer
+from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
 
 
 class FluentTooltip(ThemeAwareWidget, QWidget):
-    def __init__(self, parent=None, text="", bg_color=None, fg_color=None):
+    def __init__(self, text="", parent=None, bg_color=None, fg_color=None):
         super().__init__(parent)
         self._text = text
         self._bg = QColor()

@@ -1,7 +1,14 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import QPropertyAnimation, QEasingCurve, pyqtProperty, QObject
+from PyQt6.QtCore import QEasingCurve, QObject, QPointF, QPropertyAnimation, pyqtProperty
 from PyQt6.QtGui import QColor
+
+
+def _winui_easing() -> QEasingCurve:
+    """WinUI 3 FastOutSlowIn — cubic-bezier(0.1, 0.9, 0.2, 1.0)."""
+    e = QEasingCurve(QEasingCurve.Type.BezierSpline)
+    e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
+    return e
 
 
 class BackgroundColorObject(QObject):
@@ -43,8 +50,8 @@ class BackgroundAnimationWidget:
         self._bg_obj = BackgroundColorObject(self)
         self._bg_ani = QPropertyAnimation(
             self._bg_obj, b"backgroundColor", self)
-        self._bg_ani.setDuration(120)
-        self._bg_ani.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self._bg_ani.setDuration(83)
+        self._bg_ani.setEasingCurve(_winui_easing())
 
     def _target_bg(self) -> QColor:
         return QColor(0, 0, 0, 0)

@@ -1,24 +1,26 @@
-# coding:utf-8
 import warnings
-from ctypes import POINTER, WinDLL, byref, c_bool, c_int, pointer, sizeof
+from ctypes import POINTER, WinDLL, byref, c_int, pointer, sizeof
 from ctypes.wintypes import DWORD, LONG, LPCVOID
 from platform import version
 
-import win32con
-import win32gui
 from PyQt6.QtGui import QColor
+from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
+from win32more.Windows.Win32.UI.Controls import MARGINS as _MARGINS
 
+from ...utils.win32_utils import (
+    is_composition_enabled,
+    is_greater_equal_win10,
+    is_greater_equal_win11,
+)
 from .c_structures import (
     ACCENT_POLICY,
     ACCENT_STATE,
     DWM_BLURBEHIND,
     DWMNCRENDERINGPOLICY,
     DWMWINDOWATTRIBUTE,
-    MARGINS,
     WINDOWCOMPOSITIONATTRIB,
     WINDOWCOMPOSITIONATTRIBDATA,
 )
-from .platform.win32 import is_composition_enabled, is_greater_equal_win10, is_greater_equal_win11
 
 
 class WindowsWindowEffect:
@@ -31,13 +33,13 @@ class WindowsWindowEffect:
         self.DwmEnableBlurBehindWindow = self.dwmapi.DwmEnableBlurBehindWindow
         self.DwmSetWindowAttribute = self.dwmapi.DwmSetWindowAttribute
 
-        self.SetWindowCompositionAttribute.restype = c_bool
+        self.SetWindowCompositionAttribute.restype = c_int
         self.DwmExtendFrameIntoClientArea.restype = LONG
         self.DwmEnableBlurBehindWindow.restype = LONG
         self.DwmSetWindowAttribute.restype = LONG
         self.SetWindowCompositionAttribute.argtypes = [c_int, POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
         self.DwmSetWindowAttribute.argtypes = [c_int, DWORD, LPCVOID, DWORD]
-        self.DwmExtendFrameIntoClientArea.argtypes = [c_int, POINTER(MARGINS)]
+        self.DwmExtendFrameIntoClientArea.argtypes = [c_int, POINTER(_MARGINS)]
         self.DwmEnableBlurBehindWindow.argtypes = [c_int, POINTER(DWM_BLURBEHIND)]
 
         self.accent_policy = ACCENT_POLICY()
@@ -104,7 +106,7 @@ class WindowsWindowEffect:
             warnings.warn("The mica effect is only available on Win11")
             return
         h_wnd = int(h_wnd)
-        margins = MARGINS(16777215, 16777215, 0, 0)
+        margins = _MARGINS(16777215, 16777215, 0, 0)
         self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
         self.win_comp_attr_data.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.accent_policy.AccentState = ACCENT_STATE.ACCENT_ENABLE_HOSTBACKDROP.value
@@ -137,7 +139,7 @@ class WindowsWindowEffect:
         if not is_composition_enabled():
             return
         h_wnd = int(h_wnd)
-        margins = MARGINS(-1, -1, -1, -1)
+        margins = _MARGINS(-1, -1, -1, -1)
         self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
 
     def add_menu_shadow_effect(self, h_wnd):
@@ -150,7 +152,7 @@ class WindowsWindowEffect:
             byref(c_int(DWMNCRENDERINGPOLICY.DWMNCRP_ENABLED.value)),
             4,
         )
-        margins = MARGINS(-1, -1, -1, -1)
+        margins = _MARGINS(-1, -1, -1, -1)
         self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
 
     def remove_shadow_effect(self, h_wnd):
@@ -164,22 +166,22 @@ class WindowsWindowEffect:
 
     def add_window_animation(self, h_wnd):
         h_wnd = int(h_wnd)
-        style = win32gui.GetWindowLong(h_wnd, win32con.GWL_STYLE)
-        win32gui.SetWindowLong(
+        style = _wm.GetWindowLongW(h_wnd, _wm.GWL_STYLE)
+        _wm.SetWindowLongW(
             h_wnd,
-            win32con.GWL_STYLE,
+            _wm.GWL_STYLE,
             style
-            | win32con.WS_MINIMIZEBOX
-            | win32con.WS_MAXIMIZEBOX
-            | win32con.WS_CAPTION
-            | win32con.CS_DBLCLKS
-            | win32con.WS_THICKFRAME,
+            | _wm.WS_MINIMIZEBOX
+            | _wm.WS_MAXIMIZEBOX
+            | _wm.WS_CAPTION
+            | _wm.CS_DBLCLKS
+            | _wm.WS_THICKFRAME,
         )
 
     def disable_maximize_button(self, h_wnd):
         h_wnd = int(h_wnd)
-        style = win32gui.GetWindowLong(h_wnd, win32con.GWL_STYLE)
-        win32gui.SetWindowLong(h_wnd, win32con.GWL_STYLE, style & ~win32con.WS_MAXIMIZEBOX)
+        style = _wm.GetWindowLongW(h_wnd, _wm.GWL_STYLE)
+        _wm.SetWindowLongW(h_wnd, _wm.GWL_STYLE, style & ~_wm.WS_MAXIMIZEBOX)
 
     def enable_blur_behind_window(self, h_wnd):
         blur_behind = DWM_BLURBEHIND(1, True, 0, False)
@@ -187,23 +189,23 @@ class WindowsWindowEffect:
 
     def remove_window_animation(self, h_wnd):
         h_wnd = int(h_wnd)
-        style = win32gui.GetWindowLong(h_wnd, win32con.GWL_STYLE)
-        style &= ~win32con.WS_MINIMIZEBOX
-        style &= ~win32con.WS_MAXIMIZEBOX
-        style &= ~win32con.WS_CAPTION
-        style &= ~win32con.WS_THICKFRAME
-        win32gui.SetWindowLong(h_wnd, win32con.GWL_STYLE, style)
-        win32gui.SetWindowPos(
+        style = _wm.GetWindowLongW(h_wnd, _wm.GWL_STYLE)
+        style &= ~_wm.WS_MINIMIZEBOX
+        style &= ~_wm.WS_MAXIMIZEBOX
+        style &= ~_wm.WS_CAPTION
+        style &= ~_wm.WS_THICKFRAME
+        _wm.SetWindowLongW(h_wnd, _wm.GWL_STYLE, style)
+        _wm.SetWindowPos(
             h_wnd,
             None,
             0,
             0,
             0,
             0,
-            win32con.SWP_NOMOVE
-            | win32con.SWP_NOSIZE
-            | win32con.SWP_NOZORDER
-            | win32con.SWP_FRAMECHANGED,
+            _wm.SWP_NOMOVE
+            | _wm.SWP_NOSIZE
+            | _wm.SWP_NOZORDER
+            | _wm.SWP_FRAMECHANGED,
         )
 
     def disable_blur_behind_window(self, h_wnd):

@@ -200,7 +200,7 @@ class ComponentTokens:
     switch_thumb_size: int = 16
     switch_track_off: str = "palette.black_8"
     switch_track_on: str = "semantic.accent"
-    switch_thumb: str = "palette.white"
+    switch_thumb: str = "semantic.switch_thumb"
     shadow: str = "semantic.shadow"
     shadow_blur: float = 16.0
     shadow_offset_y: float = 4.0
@@ -293,6 +293,7 @@ class ComponentTokens:
     nav_item_pressed: str = "semantic.pressed"
     nav_selected_bg: str = "semantic.selected_bg"
     nav_selected_fg: str = "semantic.selected_fg"
+    nav_pill_accent: str = "semantic.nav_pill_accent"
     nav_border: str = "semantic.border"
     nav_width: int = 240
     nav_collapsed_width: int = 48

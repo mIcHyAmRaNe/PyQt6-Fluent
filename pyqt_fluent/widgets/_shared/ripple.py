@@ -1,8 +1,15 @@
 """Ripple effect — Material-like click ripple animation."""
 
-from PyQt6.QtCore import QObject, QPointF, QPropertyAnimation, QRectF, QEasingCurve, pyqtProperty
-from PyQt6.QtGui import QColor, QPainter, QRadialGradient
+from PyQt6.QtCore import QEasingCurve, QObject, QPointF, QPropertyAnimation, QRectF, pyqtProperty
+from PyQt6.QtGui import QColor, QPainter, QPainterPath, QRadialGradient
 from PyQt6.QtWidgets import QWidget
+
+
+def _winui_easing() -> QEasingCurve:
+    """WinUI 3 FastOutSlowIn — cubic-bezier(0.1, 0.9, 0.2, 1.0)."""
+    e = QEasingCurve(QEasingCurve.Type.BezierSpline)
+    e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
+    return e
 
 
 class RippleEffect(QObject):
@@ -19,8 +26,9 @@ class RippleEffect(QObject):
         self._radius = 0.0
         self._origin = QPointF()
         self._anim = QPropertyAnimation(self, b"radius", self)
-        self._anim.setDuration(400)
-        self._anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self._anim.setDuration(250)
+        self._anim.setEasingCurve(_winui_easing())
+        self._anim.finished.connect(self._on_ripple_finished)
 
     def _get_radius(self) -> float:
         return self._radius
@@ -38,13 +46,22 @@ class RippleEffect(QObject):
         self._anim.setEndValue(float(max_dim) * 1.5)
         self._anim.start()
 
-    def paint(self, painter: QPainter, rect: QRectF) -> None:
+    def _on_ripple_finished(self) -> None:
+        self._radius = 0.0
+        self._parent.update()
+
+    def paint(self, painter: QPainter, rect: QRectF, radius: float = 0) -> None:
         if self._radius <= 0.0:
             return
         g = QRadialGradient(self._origin, self._radius)
         g.setColorAt(0.0, self._color)
         g.setColorAt(1.0, QColor(0, 0, 0, 0))
         painter.save()
-        painter.setClipRect(rect)
+        if radius > 0:
+            path = QPainterPath()
+            path.addRoundedRect(rect, radius, radius)
+            painter.setClipPath(path)
+        else:
+            painter.setClipRect(rect)
         painter.fillRect(rect, g)
         painter.restore()

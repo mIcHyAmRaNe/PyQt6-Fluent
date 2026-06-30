@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRectF, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush, QFont, QPen
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QSizePolicy
+from PyQt6.QtCore import QRectF, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPainterPath, QPen
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QWidget
 
 from ...tokens.theme import ThemeDefinition, ThemeManager
 from .._shared.theme_aware import ThemeAwareWidget
-
 
 _SEVERITY_KEYS = {
     "info": "infobar_info",
@@ -19,7 +18,7 @@ _SEVERITY_KEYS = {
 class InfoBar(ThemeAwareWidget, QWidget):
     dismissed = pyqtSignal()
 
-    def __init__(self, parent=None, text="", severity="info",
+    def __init__(self, text="", severity="info", parent=None,
                  bg_color=None, fg_color=None, closable=True, duration=0):
         super().__init__(parent)
         self._text = text

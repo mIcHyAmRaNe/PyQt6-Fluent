@@ -25,7 +25,7 @@ class PaletteFamily:
     _data: dict = field(default_factory=dict, repr=False)
 
     @classmethod
-    def with_values(cls, **kw: PaletteToken) -> "PaletteFamily":
+    def with_values(cls, **kw: PaletteToken) -> PaletteFamily:
         return cls(_data={k: v for k, v in kw.items()})
 
     def __getattr__(self, key: str) -> PaletteToken:
@@ -151,15 +151,50 @@ class Palette:
     white_10: PaletteToken = PaletteToken("white_10", QColor(255, 255, 255, 26), QColor(255, 255, 255, 26))
     white_20: PaletteToken = PaletteToken("white_20", QColor(255, 255, 255, 51), QColor(255, 255, 255, 51))
 
-    # WinUI 3 / Fluent 2 button colours (Common_themeresources_any.xaml)
+    # ── WinUI 3 / Fluent 2 token primitives ───────────────────
+    # Source: controls/dev/CommonStyles/Common_themeresources_any.xaml
+
     # ControlFillColorDefault / Secondary / Tertiary / Disabled
     btn_bg: PaletteToken = PaletteToken("btn_bg", QColor(255, 255, 255, 179), QColor(255, 255, 255, 15))
     btn_bg_hover: PaletteToken = PaletteToken("btn_bg_hover", QColor(249, 249, 249, 128), QColor(255, 255, 255, 21))
     btn_bg_pressed: PaletteToken = PaletteToken("btn_bg_pressed", QColor(249, 249, 249, 77), QColor(255, 255, 255, 8))
     btn_bg_disabled: PaletteToken = PaletteToken("btn_bg_disabled", QColor(249, 249, 249, 77), QColor(255, 255, 255, 11))
-    # ControlStrokeColorDefault + ControlStrokeColorSecondary (for ControlElevationBorderBrush gradient)
+
+    # ControlStrokeColorDefault / ControlStrokeColorSecondary (for ControlElevationBorderBrush gradient)
     btn_border: PaletteToken = PaletteToken("btn_border", QColor(0, 0, 0, 15), QColor(255, 255, 255, 18))
     btn_border_accent: PaletteToken = PaletteToken("btn_border_accent", QColor(0, 0, 0, 41), QColor(255, 255, 255, 24))
+
+    # Text fills (TextFillColorPrimary / Secondary / Tertiary / Disabled)
+    text_primary: PaletteToken = PaletteToken("text_primary", QColor(0, 0, 0, 228), QColor(255, 255, 255, 255))
+    text_secondary: PaletteToken = PaletteToken("text_secondary", QColor(0, 0, 0, 158), QColor(255, 255, 255, 197))
+    text_tertiary: PaletteToken = PaletteToken("text_tertiary", QColor(0, 0, 0, 114), QColor(255, 255, 255, 135))
+    text_disabled: PaletteToken = PaletteToken("text_disabled", QColor(0, 0, 0, 92), QColor(255, 255, 255, 93))
+
+    # Stroke colours
+    stroke_default: PaletteToken = PaletteToken("stroke_default", QColor(0, 0, 0, 15), QColor(255, 255, 255, 18))
+    stroke_secondary: PaletteToken = PaletteToken("stroke_secondary", QColor(0, 0, 0, 41), QColor(255, 255, 255, 24))
+    stroke_card: PaletteToken = PaletteToken("stroke_card", QColor(0, 0, 0, 15), QColor(0, 0, 0, 25))
+    stroke_flyout: PaletteToken = PaletteToken("stroke_flyout", QColor(0, 0, 0, 15), QColor(0, 0, 0, 51))
+    stroke_divider: PaletteToken = PaletteToken("stroke_divider", QColor(0, 0, 0, 15), QColor(255, 255, 255, 21))
+    stroke_strong_default: PaletteToken = PaletteToken("stroke_strong_default", QColor(0, 0, 0, 114), QColor(255, 255, 255, 139))
+    stroke_strong_disabled: PaletteToken = PaletteToken("stroke_strong_disabled", QColor(0, 0, 0, 55), QColor(255, 255, 255, 40))
+
+    # ControlFillColorInputActive
+    input_active_bg: PaletteToken = PaletteToken("input_active_bg", QColor(255, 255, 255, 255), QColor(30, 30, 30, 179))
+
+    # SubtleFill colors (interactivity — hover/pressed overlays)
+    subtle_secondary: PaletteToken = PaletteToken("subtle_secondary", QColor(0, 0, 0, 9), QColor(255, 255, 255, 15))
+    subtle_tertiary: PaletteToken = PaletteToken("subtle_tertiary", QColor(0, 0, 0, 6), QColor(255, 255, 255, 10))
+
+    # Focus stroke colours (inner + outer ring)
+    focus_outer: PaletteToken = PaletteToken("focus_outer", QColor(0, 0, 0, 228), QColor(255, 255, 255, 255))
+    focus_inner: PaletteToken = PaletteToken("focus_inner", QColor(255, 255, 255, 179), QColor(0, 0, 0, 179))
+
+    # SolidBackgroundFill
+    solid_bg_base: PaletteToken = PaletteToken("solid_bg_base", QColor(243, 243, 243), QColor(32, 32, 32))
+    solid_bg_secondary: PaletteToken = PaletteToken("solid_bg_secondary", QColor(238, 238, 238), QColor(28, 28, 28))
+    solid_bg_tertiary: PaletteToken = PaletteToken("solid_bg_tertiary", QColor(249, 249, 249), QColor(40, 40, 40))
+    solid_bg_quarternary: PaletteToken = PaletteToken("solid_bg_quarternary", QColor(255, 255, 255), QColor(44, 44, 44))
 
     def token(self, path: str) -> PaletteToken:
         parts = path.split(".")

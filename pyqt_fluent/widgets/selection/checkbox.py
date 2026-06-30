@@ -5,7 +5,8 @@ from __future__ import annotations
 from enum import Enum
 from importlib.resources import files as _resources
 
-from PyQt6.QtCore import QByteArray, QFile, QPointF, QRectF, QSize, Qt
+from PyQt6.QtCore import (QByteArray, QEasingCurve, QFile, QPointF,
+                           QPropertyAnimation, QRectF, QSize, Qt, pyqtProperty)
 from PyQt6.QtGui import QBrush, QColor, QFontMetrics, QPainter, QPainterPath, QPen
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QAbstractButton, QSizePolicy
@@ -13,7 +14,6 @@ from PyQt6.QtXml import QDomDocument
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.focus_ring import FocusRing
-from .._shared.ripple import RippleEffect
 from .._shared.theme_aware import ThemeAwareWidget
 
 _BOX_SIZE = 16
@@ -86,13 +86,19 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
         super().__init__(parent)
         self.setText(text)
         self.setCheckable(True)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setMouseTracking(True)
+        self.setFocusPolicy(Qt.FocusPolicy.TabFocus)
         self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self._hovered = False
         self._pressed = False
         self._focus_color = QColor()
+        self._scale = 1.0
+        self._scale_ani = QPropertyAnimation(self, b"box_scale", self)
+        self._scale_ani.setDuration(83)
+        e = QEasingCurve(QEasingCurve.Type.BezierSpline)
+        e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
+        self._scale_ani.setEasingCurve(e)
 
         # checked colour override (per-theme)
         self._light_checked = QColor()
@@ -111,10 +117,20 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
         self._disabled_border = QColor()
         self._disabled_bg = QColor()
 
-        self._ripple = RippleEffect(self)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet("CheckBox { background: transparent; border: none; }")
         self._init_theme_aware()
+
+    # ── press animation ──────────────────────────────────────
+
+    def _get_box_scale(self) -> float:
+        return self._scale
+
+    def _set_box_scale(self, v: float) -> None:
+        self._scale = v
+        self.update()
+
+    box_scale = pyqtProperty(float, _get_box_scale, _set_box_scale)
 
     # ── public API ──────────────────────────────────────────
 
@@ -209,7 +225,7 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
         self._accent = r.color("semantic.accent")
         self._accent_hover = r.color("semantic.accent_hover")
         self._accent_pressed = r.color("semantic.accent_pressed")
-        self._border = r.color("semantic.control_border")
+        self._border = r.color("palette.stroke_strong_default")
         self._hover_bg = r.color("semantic.hover")
         self._pressed_bg = r.color("semantic.pressed")
         self._disabled_border = r.color("gray.500") if theme.is_dark else r.color("gray.400")
@@ -222,25 +238,39 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
     # ── events ──────────────────────────────────────────────
 
     def enterEvent(self, e):
-        self._hovered = True
-        self.update()
         super().enterEvent(e)
 
     def leaveEvent(self, e):
         self._hovered = False
         self._pressed = False
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         self.update()
         super().leaveEvent(e)
+
+    def mouseMoveEvent(self, e):
+        over = self._box_rect().contains(e.position())
+        self.setCursor(Qt.CursorShape.PointingHandCursor if over else Qt.CursorShape.ArrowCursor)
+        if over != self._hovered:
+            self._hovered = over
+            self.update()
+        super().mouseMoveEvent(e)
 
     def mousePressEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton and self._box_rect().contains(e.position()):
             self._pressed = True
-            self._ripple.start(e.position())
+            self._scale_ani.stop()
+            self._scale_ani.setStartValue(self._scale)
+            self._scale_ani.setEndValue(0.85)
+            self._scale_ani.start()
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton:
             self._pressed = False
+            self._scale_ani.stop()
+            self._scale_ani.setStartValue(self._scale)
+            self._scale_ani.setEndValue(1.0)
+            self._scale_ani.start()
         super().mouseReleaseEvent(e)
 
     # ── paint ───────────────────────────────────────────────
@@ -251,6 +281,13 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
 
         box = self._box_rect()
         s = self._state()
+
+        if self._scale < 1.0:
+            painter.save()
+            centre = box.center()
+            painter.translate(centre)
+            painter.scale(self._scale, self._scale)
+            painter.translate(-centre)
 
         # resolve the current theme resolver for per-state colours
         from ...tokens.theme import ThemeManager
@@ -281,6 +318,9 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
             _render_svg(painter, _CMARK, cm,
                         QColor(0, 0, 0, 0), QColor("#FFFFFF"))
 
+        if self._scale < 1.0:
+            painter.restore()
+
         # ── label ───────────────────────────────────────────
         txt_color = self._text_color(r, theme)
         painter.setPen(txt_color)
@@ -289,10 +329,9 @@ class CheckBox(ThemeAwareWidget, QAbstractButton):
         align = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         painter.drawText(r_, align, self.text())
 
-        # ── ripple & focus ──────────────────────────────────
-        self._ripple.paint(painter, QRectF(self.rect()))
+        # ── focus ──────────────────────────────────────────
         if self.hasFocus():
-            FocusRing.paint(painter, QRectF(self.rect()), self._focus_color)
+            FocusRing.paint(painter, self._box_rect(), self._focus_color, int(_CORNER))
 
     def _text_color(self, r, theme: ThemeDefinition) -> QColor:
         if self._light_text.isValid() or self._dark_text.isValid():

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QComboBox, QListView, QSizePolicy
 
@@ -47,12 +46,13 @@ ComboBox {{
     color: {fg.name()};
     border: 1px solid {border.name(QColor.NameFormat.HexArgb)};
     border-radius: {radius}px;
-    padding: 0 8px;
+    padding: 0 28px 0 8px;
     font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-size: 14px;
 }}
 ComboBox:focus {{
-    border: 1px solid {focus_border.name()};
+    border: 2px solid {focus_border.name()};
+    padding: 0 27px 0 7px;
 }}
 ComboBox:disabled {{
     opacity: 0.4;
@@ -62,17 +62,16 @@ ComboBox::drop-down {{
     subcontrol-position: top right;
     width: 28px;
     border: none;
-    border-left: none;
     border-top-right-radius: {radius}px;
     border-bottom-right-radius: {radius}px;
 }}
 ComboBox::down-arrow {{
     image: none;
-    width: 10px;
-    height: 6px;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 6px solid {arrow.name()};
+    width: 8px;
+    height: 8px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid {arrow.name()};
 }}
 ComboBox QAbstractItemView {{
     background-color: {dropdown_bg.name(QColor.NameFormat.HexArgb)};
@@ -86,7 +85,7 @@ ComboBox QAbstractItemView {{
 }}
 ComboBox QAbstractItemView::item {{
     padding: 4px 12px;
-    min-height: 28px;
+    min-height: 24px;
 }}
 ComboBox QAbstractItemView::item:hover {{
     background-color: {item_hover.name(QColor.NameFormat.HexArgb)};

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import QRectF, QPropertyAnimation, pyqtProperty
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QBrush
-from PyQt6.QtWidgets import QWidget, QSizePolicy
+from PyQt6.QtCore import QPropertyAnimation, QRectF, pyqtProperty
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPainterPath
+from PyQt6.QtWidgets import QSizePolicy, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget

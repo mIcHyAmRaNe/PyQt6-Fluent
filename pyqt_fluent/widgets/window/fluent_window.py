@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QRect
-from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget
 
-from ...tokens.theme import ThemeDefinition, ThemeManager
-from ..titlebar import TitleBar
+from ...tokens.theme import ThemeManager
 from .frameless_window import FramelessWindow
 
 

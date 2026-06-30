@@ -2,9 +2,24 @@ from __future__ import annotations
 
 from enum import Enum
 
-from PyQt6.QtCore import Qt, QRectF, QSize, QPointF
-from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPainterPath, QPen, QBrush, QLinearGradient
+from PyQt6.QtCore import QPointF, QRectF, QSize, Qt
+from PyQt6.QtGui import QBrush, QColor, QFontMetrics, QLinearGradient, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QAbstractButton
+
+
+def _blend(base: QColor, overlay: QColor) -> QColor:
+    """Alpha composite *overlay* over *base*, returning an opaque QColor."""
+    if overlay.alpha() >= 255:
+        return overlay
+    if overlay.alpha() <= 0:
+        return base
+    a = overlay.alphaF()
+    return QColor(
+        int(base.red() * (1 - a) + overlay.red() * a),
+        int(base.green() * (1 - a) + overlay.green() * a),
+        int(base.blue() * (1 - a) + overlay.blue() * a),
+        255,
+    )
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.background_animation import BackgroundAnimationWidget
@@ -20,7 +35,6 @@ class _ButtonState(Enum):
     PRESSED = 2
 
 
-_PRESSED_OPACITY = 0.786
 _DISABLED_OPACITY = 0.4
 
 
@@ -56,6 +70,7 @@ class ButtonBase(
         self._focus_color = QColor()
 
         self._radius = 4
+        self._is_dark = False
 
         self._ripple = RippleEffect(self)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -71,6 +86,7 @@ class ButtonBase(
         r = theme.resolver()
         self._radius = r.int("component.button_radius")
         self._focus_color = r.color("semantic.focus_ring")
+        self._is_dark = theme.is_dark
 
         control = getattr(theme.component, self.control_tokens_key, None)
         if control is not None:
@@ -127,9 +143,7 @@ class ButtonBase(
 
     def mouseReleaseEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton:
-            self._set_state(
-                _ButtonState.HOVER if self.underMouse() else _ButtonState.NORMAL
-            )
+            self._set_state(_ButtonState.NORMAL)
         super().mouseReleaseEvent(e)
 
     def changeEvent(self, e):
@@ -160,8 +174,16 @@ class ButtonBase(
             if is_flat:
                 pen = QPen(self._border, 1)
             else:
-                # WinUI ControlElevationBorderBrush — linear gradient 3px tall
-                grad = QLinearGradient(rect.topLeft(), rect.topLeft() + QPointF(0, 3))
+                # WinUI ControlElevationBorderBrush — 3px tall linear gradient
+                # Dark: top→bottom (bright→subtle)
+                # Light: bottom→top (bright→subtle)  via ScaleY="-1"
+                if self._is_dark:
+                    start = rect.topLeft()
+                    end = rect.topLeft() + QPointF(0, 3)
+                else:
+                    start = rect.bottomLeft() - QPointF(0, 2)
+                    end = rect.bottomLeft() + QPointF(0, 1)
+                grad = QLinearGradient(start, end)
                 grad.setColorAt(0.33, self._border_accent)
                 grad.setColorAt(1.0, self._border)
                 pen = QPen(QBrush(grad), 1)
@@ -178,8 +200,6 @@ class ButtonBase(
 
         if not self.isEnabled():
             painter.setOpacity(_DISABLED_OPACITY)
-        elif self._state is _ButtonState.PRESSED:
-            painter.setOpacity(_PRESSED_OPACITY)
 
         painter.save()
         if self._translate_y > 0:
@@ -187,7 +207,7 @@ class ButtonBase(
         self._draw_indicator(painter)
         painter.restore()
 
-        self._ripple.paint(painter, QRectF(self.rect()))
+        self._ripple.paint(painter, QRectF(self.rect()), self._radius)
 
         if not self.isEnabled():
             painter.setOpacity(1.0)

@@ -62,7 +62,8 @@ Input {{
     font-size: 14px;
 }}
 Input:focus {{
-    border: 1px solid {focus_border.name()};
+    border: 2px solid {focus_border.name()};
+    padding: 0 7px;
 }}
 Input:disabled {{
     opacity: 0.4;
@@ -119,7 +120,8 @@ SearchBox {{
     font-size: 14px;
 }}
 SearchBox:focus {{
-    border: 1px solid {focus_border.name()};
+    border: 2px solid {focus_border.name()};
+    padding: 0 7px;
 }}
 SearchBox:disabled {{
     opacity: 0.4;

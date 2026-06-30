@@ -1,9 +1,9 @@
-from .palette import Palette, PaletteFamily, PaletteToken
-from .semantic import SemanticPalette, SemanticToken
 from .component import ComponentTokens
+from .palette import Palette, PaletteFamily, PaletteToken
 from .resolver import TokenResolver
-from .typography import Typography, FontWeight
-from .theme import ThemeDefinition, ThemeManager, ThemeObserver, ThemeMode
+from .semantic import SemanticPalette, SemanticToken
+from .theme import ThemeDefinition, ThemeManager, ThemeMode, ThemeObserver
+from .typography import FontWeight, Typography
 
 __all__ = [
     "Palette",

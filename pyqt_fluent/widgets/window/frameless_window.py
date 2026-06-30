@@ -1,16 +1,18 @@
-from ctypes import cast, create_unicode_buffer, windll
+from ctypes import cast, create_unicode_buffer
 from ctypes.wintypes import LPRECT, MSG
 
-import win32api
-import win32con
-import win32gui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QWidget
+from win32more.Windows.Win32.Foundation import POINT as _POINT
+from win32more.Windows.Win32.Foundation import RECT as _RECT
+from win32more.Windows.Win32.Graphics import Gdi as _gdi
+from win32more.Windows.Win32.System import DataExchange as _de
+from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
 
 from ...tokens.theme import ThemeDefinition, ThemeManager, ThemeObserver
-from ...utils.theme import Theme, system_theme
 from ...utils import win32_utils as win_utils
+from ...utils.theme import Theme, system_theme
 from ...utils.win32_utils import Taskbar, get_system_accent_color, is_system_border_accent_enabled
 from ..titlebar import TitleBar
 from .c_structures import LPNCCALCSIZE_PARAMS
@@ -88,24 +90,28 @@ class FramelessWindow(QWidget, ThemeObserver):
         if not msg.hWnd:
             return super().nativeEvent(event_type, message)
 
-        if msg.message == win32con.WM_NCHITTEST and self._is_resize_enabled:
+        if msg.message == _wm.WM_NCHITTEST and self._is_resize_enabled:
             return self._handle_nc_hit_test(msg)
-        elif msg.message == win32con.WM_NCCALCSIZE:
+        elif msg.message == _wm.WM_NCCALCSIZE:
             return self._handle_nc_calc_size(msg)
         elif msg.message == WM_SETTINGCHANGE:
             return self._handle_setting_change(msg)
-        elif msg.message == win32con.WM_SETFOCUS and is_system_border_accent_enabled():
+        elif msg.message == _wm.WM_SETFOCUS and is_system_border_accent_enabled():
             self.window_effect.set_border_accent_color(self.winId(), get_system_accent_color())
-        elif msg.message == win32con.WM_KILLFOCUS and is_system_border_accent_enabled():
+        elif msg.message == _wm.WM_KILLFOCUS and is_system_border_accent_enabled():
             self.window_effect.remove_border_accent_color(self.winId())
 
         return False, 0
 
     def _handle_nc_hit_test(self, msg):
-        x_pos, y_pos = win32gui.ScreenToClient(msg.hWnd, win32api.GetCursorPos())
-        client_rect = win32gui.GetClientRect(msg.hWnd)
-        w = client_rect[2] - client_rect[0]
-        h = client_rect[3] - client_rect[1]
+        pt = _POINT()
+        _wm.GetCursorPos(pt)
+        _gdi.ScreenToClient(msg.hWnd, pt)
+        x_pos, y_pos = pt.x, pt.y
+        rc = _RECT()
+        _wm.GetClientRect(msg.hWnd, rc)
+        w = rc.right - rc.left
+        h = rc.bottom - rc.top
         bw = (
             0
             if win_utils.is_maximized(msg.hWnd) or win_utils.is_full_screen(msg.hWnd)
@@ -116,21 +122,21 @@ class FramelessWindow(QWidget, ThemeObserver):
         ty = y_pos < bw
         by = y_pos > h - bw
         if lx and ty:
-            return True, win32con.HTTOPLEFT
+            return True, _wm.HTTOPLEFT
         elif rx and by:
-            return True, win32con.HTBOTTOMRIGHT
+            return True, _wm.HTBOTTOMRIGHT
         elif rx and ty:
-            return True, win32con.HTTOPRIGHT
+            return True, _wm.HTTOPRIGHT
         elif lx and by:
-            return True, win32con.HTBOTTOMLEFT
+            return True, _wm.HTBOTTOMLEFT
         elif ty:
-            return True, win32con.HTTOP
+            return True, _wm.HTTOP
         elif by:
-            return True, win32con.HTBOTTOM
+            return True, _wm.HTBOTTOM
         elif lx:
-            return True, win32con.HTLEFT
+            return True, _wm.HTLEFT
         elif rx:
-            return True, win32con.HTRIGHT
+            return True, _wm.HTRIGHT
         return False, 0
 
     def _handle_nc_calc_size(self, msg):
@@ -157,13 +163,13 @@ class FramelessWindow(QWidget, ThemeObserver):
                 rect.left += Taskbar.AUTO_HIDE_THICKNESS
             elif position == Taskbar.RIGHT:
                 rect.right -= Taskbar.AUTO_HIDE_THICKNESS
-        result = 0 if not msg.wParam else win32con.WVR_REDRAW
+        result = 0 if not msg.wParam else _wm.WVR_REDRAW
         return True, result
 
     def _handle_setting_change(self, msg):
         if msg.lParam:
             buf = create_unicode_buffer(256)
-            windll.user32.GlobalGetAtomNameW(msg.lParam, buf, 256)
+            _de.GlobalGetAtomNameW(msg.lParam, buf, 256)
             changed = buf.value
             if changed and "ImmersiveColorSet" in changed:
                 self._on_system_theme_changed()
@@ -189,12 +195,12 @@ class FramelessWindow(QWidget, ThemeObserver):
 
     def _on_screen_changed(self):
         h_wnd = int(self.windowHandle().winId())
-        win32gui.SetWindowPos(
+        _wm.SetWindowPos(
             h_wnd,
             None,
             0,
             0,
             0,
             0,
-            win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED,
+            _wm.SWP_NOMOVE | _wm.SWP_NOSIZE | _wm.SWP_FRAMECHANGED,
         )

@@ -1,11 +1,20 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import QPoint, QRect, Qt, pyqtSignal
+from PyQt6.QtCore import QPoint, QRect, QRectF, Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QTabBar, QTabWidget, QWidget
 
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
+
+
+def _draw_close(painter: QPainter, rect: QRect, color: QColor) -> None:
+    painter.setPen(QPen(color, 1.5))
+    cx = rect.center().x()
+    cy = rect.center().y()
+    s = 3
+    painter.drawLine(QPoint(cx - s, cy - s), QPoint(cx + s, cy + s))
+    painter.drawLine(QPoint(cx + s, cy - s), QPoint(cx - s, cy + s))
 
 
 class TabBar(ThemeAwareWidget, QTabBar):
@@ -99,7 +108,7 @@ class TabBar(ThemeAwareWidget, QTabBar):
     def _close_button_rect(self, index: int) -> QRect:
         tr = self.tabRect(index)
         x = tr.right() - self._close_margin - self._close_size
-        y = tr.center().y() - self._close_size // 2
+        y = self.height() // 2 - self._close_size // 2
         return QRect(x, y, self._close_size, self._close_size)
 
     def paintEvent(self, e) -> None:
@@ -131,30 +140,16 @@ class TabBar(ThemeAwareWidget, QTabBar):
             f.setPixelSize(13)
             painter.setFont(f)
 
-            label_rect = tr.adjusted(10, 0, -(self._close_size + self._close_margin + 4), 0)
-            painter.drawText(label_rect, Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,
-                             self.tabText(i))
+            label_rect = QRectF(tr.x() + 10, 0, tr.width() - 10 - (self._close_size + self._close_margin + 4), self.height())
+            painter.drawText(label_rect, Qt.AlignmentFlag.AlignCenter, self.tabText(i))
 
+            cr = self._close_button_rect(i)
             if close_hovered:
-                cr = self._close_button_rect(i)
                 cpath = QPainterPath()
                 cpath.addRoundedRect(QRectF(cr), 3, 3)
                 painter.fillPath(cpath, self._close_hover_bg)
-
-                painter.setPen(QPen(fg, 1.5))
-                cx = cr.center().x()
-                cy = cr.center().y()
-                s = 4
-                painter.drawLine(QPoint(cx - s, cy - s), QPoint(cx + s, cy + s))
-                painter.drawLine(QPoint(cx + s, cy - s), QPoint(cx - s, cy + s))
-            elif selected:
-                cr = self._close_button_rect(i)
-                painter.setPen(QPen(fg, 1.5))
-                cx = cr.center().x()
-                cy = cr.center().y()
-                s = 4
-                painter.drawLine(QPoint(cx - s, cy - s), QPoint(cx + s, cy + s))
-                painter.drawLine(QPoint(cx + s, cy - s), QPoint(cx - s, cy + s))
+            if close_hovered or selected:
+                _draw_close(painter, cr, fg)
 
 
 class TabView(ThemeAwareWidget, QTabWidget):
@@ -188,7 +183,7 @@ class TabView(ThemeAwareWidget, QTabWidget):
     def on_theme_applied(self, theme: ThemeDefinition) -> None:
         r = theme.resolver()
         bg = self._custom_bg if self._custom_bg else r.color("component.window_bg")
-        bar_bg = self._custom_bar_bg if self._custom_bar_bg else r.color("component.tab_bar_bg")
+        self._custom_bar_bg if self._custom_bar_bg else r.color("component.tab_bar_bg")
         border = r.color("component.tab_border")
 
         self.setStyleSheet(f"""

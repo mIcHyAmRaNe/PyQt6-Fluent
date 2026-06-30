@@ -1,6 +1,5 @@
-# coding:utf-8
 from ctypes import POINTER, Structure, c_int
-from ctypes.wintypes import BOOL, DWORD, HWND, RECT, UINT, ULONG, HRGN
+from ctypes.wintypes import BOOL, DWORD, HRGN, HWND, RECT, UINT, ULONG
 from enum import Enum
 
 
@@ -98,15 +97,6 @@ class DWMWINDOWATTRIBUTE(Enum):
     DWMWA_VISIBLE_FRAME_BORDER_THICKNESS = 37
     DWMWA_SYSTEMBACKDROP_TYPE = 38
     DWMWA_LAST = 39
-
-
-class MARGINS(Structure):
-    _fields_ = [
-        ("cxLeftWidth", c_int),
-        ("cxRightWidth", c_int),
-        ("cyTopHeight", c_int),
-        ("cyBottomHeight", c_int),
-    ]
 
 
 class DWM_BLURBEHIND(Structure):

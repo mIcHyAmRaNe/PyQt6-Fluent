@@ -1,15 +1,15 @@
 from ctypes.wintypes import MSG
 
-import win32con
-import win32gui
 from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QApplication
+from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
+from win32more.Windows.Win32.UI.Input import KeyboardAndMouse as _km
 
 from ...tokens.theme import ThemeDefinition
 from ...utils import win32_utils as win_utils
 from ...utils.theme import is_dark
-from ...utils.win32_utils import QT_VERSION, is_greater_equal_win10
+from ...utils.win32_utils import QT_VERSION
 from .frameless_window import FramelessWindow
 
 
@@ -50,9 +50,9 @@ class AcrylicWindow(FramelessWindow):
         )
 
         h_wnd = int(self.winId())
-        style = win32gui.GetWindowLong(h_wnd, win32con.GWL_STYLE)
-        style &= ~win32con.WS_SYSMENU
-        win32gui.SetWindowLong(h_wnd, win32con.GWL_STYLE, style)
+        style = _wm.GetWindowLongW(h_wnd, _wm.GWL_STYLE)
+        style &= ~_wm.WS_SYSMENU
+        _wm.SetWindowLongW(h_wnd, _wm.GWL_STYLE, style)
 
     def _on_system_theme_changed(self):
         self.window_effect.set_acrylic_effect(
@@ -66,7 +66,7 @@ class AcrylicWindow(FramelessWindow):
     def nativeEvent(self, event_type, message):
         msg = MSG.from_address(message.__int__())
 
-        if msg.message == win32con.WM_SYSKEYDOWN and msg.wParam == win32con.VK_F4:
+        if msg.message == _wm.WM_SYSKEYDOWN and msg.wParam == _km.VK_F4:
             self.__closed_by_key = True
             QApplication.sendEvent(self, QCloseEvent())
             return False, 0

@@ -29,27 +29,34 @@ from .widgets._shared import (  # noqa: F401
     TranslateYAnimation,
 )
 from .widgets.buttons import (  # noqa: F401
-    Button,
-    ButtonBase,
-    Switch,
     # Legacy aliases
     AccentButton,
+    Button,
+    ButtonBase,
     FilledButton,
     HyperlinkButton,
     OutlinedButton,
     PushButton,
+    Switch,
     TextButton,
     ToggleButton,
     TransparentButton,
 )
-from .widgets.selection import CheckBox, RadioButton  # noqa: F401
+from .widgets.data import DatePicker, NumberBox, TimePicker  # noqa: F401
 from .widgets.feedback import Badge, ProgressBar, Spinner  # noqa: F401
 from .widgets.inputs import Input, Rating, SearchBox, Slider, Tag, Textarea  # noqa: F401
 from .widgets.layout import Card, Divider  # noqa: F401
+from .widgets.misc import (  # noqa: F401
+    Avatar,
+    CommandBar,
+    ContentDialog,
+    Expander,
+    FluentTooltip,
+    InfoBar,
+)
+from .widgets.navigation import ComboBox, NavigationView, TabView  # noqa: F401
+from .widgets.selection import CheckBox, RadioButton  # noqa: F401
 from .widgets.text import FluentLabel  # noqa: F401
-from .widgets.navigation import ComboBox, TabView, NavigationView  # noqa: F401
-from .widgets.data import DatePicker, TimePicker, NumberBox  # noqa: F401
-from .widgets.misc import Avatar, CommandBar, ContentDialog, Expander, InfoBar, FluentTooltip  # noqa: F401
 from .widgets.titlebar import StandardTitleBar, TitleBar, TitleBarBase  # noqa: F401
 from .widgets.titlebar.title_bar_buttons import (  # noqa: F401
     CloseButton,
