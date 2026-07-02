@@ -6,13 +6,15 @@ from PyQt6.QtCore import QRectF, Qt
 from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath, QPen, QPixmap
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QSizePolicy, QWidget
 
+from ...icons.engine import FluentIcon, IconEngine
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
 
 
 class _CommandBarButton(ThemeAwareWidget, QPushButton):
-    def __init__(self, text="", icon=None, parent=None,
-                 fg_color=None, hover_color=None, pressed_color=None):
+    def __init__(
+        self, text="", icon=None, parent=None, fg_color=None, hover_color=None, pressed_color=None
+    ):
         super().__init__(parent)
         self.setText(text)
         self._icon_pixmap: QPixmap | None = None
@@ -30,17 +32,34 @@ class _CommandBarButton(ThemeAwareWidget, QPushButton):
         self.setMouseTracking(True)
         self.setFixedHeight(36)
         self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
         self._init_theme_aware()
 
     def on_theme_applied(self, theme: ThemeDefinition) -> None:
         r = theme.resolver()
         self._fg = self._custom_fg if self._custom_fg else r.color("component.commandbar_fg")
-        self._hover = self._custom_hover if self._custom_hover else r.color("component.commandbar_item_hover")
-        self._pressed = self._custom_pressed if self._custom_pressed else r.color("component.commandbar_item_pressed")
+        self._hover = (
+            self._custom_hover if self._custom_hover else r.color("component.commandbar_item_hover")
+        )
+        self._pressed = (
+            self._custom_pressed
+            if self._custom_pressed
+            else r.color("component.commandbar_item_pressed")
+        )
+
         if self._icon_path:
-            self._icon_pixmap = QPixmap(self._icon_path)
-            if self._icon_pixmap.isNull():
-                self._icon_pixmap = None
+            if isinstance(self._icon_path, FluentIcon):
+                icon = IconEngine.instance().icon(self._icon_path, color=self._fg, size=16)
+                pix = icon.pixmap(16, 16)
+                # ✅ Only store the pixmap if it's valid (non-null)
+                self._icon_pixmap = pix if not pix.isNull() else None
+            else:
+                pix = QPixmap(self._icon_path)
+                if pix.isNull():
+                    self._icon_pixmap = None
+                else:
+                    self._icon_pixmap = pix
+
         self.update()
 
     def enterEvent(self, e):
@@ -68,15 +87,19 @@ class _CommandBarButton(ThemeAwareWidget, QPushButton):
         r = self.rect()
         text_r = QRectF(r)
 
-        if self._icon_pixmap:
+        # ✅ Check both truthiness AND isNull() before drawing
+        if self._icon_pixmap is not None and not self._icon_pixmap.isNull():
             sz = 16
             pix = self._icon_pixmap.scaled(
-                sz, sz, Qt.AspectRatioMode.KeepAspectRatio,
+                sz,
+                sz,
+                Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
             ix = r.x() + 8
             iy = r.y() + (r.height() - sz) // 2
             painter.drawPixmap(ix, iy, pix)
+
             text_r = QRectF(ix + sz + 6, r.y(), r.width() - (ix + sz + 6 - r.x()), r.height())
 
         painter.drawText(text_r, Qt.AlignmentFlag.AlignCenter, self.text())
@@ -102,8 +125,15 @@ class _Separator(QWidget):
 
 
 class CommandBar(ThemeAwareWidget, QWidget):
-    def __init__(self, parent=None, bg_color=None, fg_color=None,
-                 item_hover=None, item_pressed=None, border_color=None):
+    def __init__(
+        self,
+        parent=None,
+        bg_color=None,
+        fg_color=None,
+        item_hover=None,
+        item_pressed=None,
+        border_color=None,
+    ):
         super().__init__(parent)
         self._bg = QColor()
         self._border = QColor()
@@ -117,14 +147,18 @@ class CommandBar(ThemeAwareWidget, QWidget):
         self._layout = QHBoxLayout(self)
         self._layout.setContentsMargins(4, 2, 4, 2)
         self._layout.setSpacing(2)
-
         self.setFixedHeight(40)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
         self._init_theme_aware()
 
-    def add_action(self, text: str, icon: str | None = None, callback: Callable | None = None) -> _CommandBarButton:
+    def add_action(
+        self, text: str, icon: str | FluentIcon | None = None, callback: Callable | None = None
+    ) -> _CommandBarButton:
         btn = _CommandBarButton(
-            text=text, icon=icon, parent=self,
+            text=text,
+            icon=icon,
+            parent=self,
             fg_color=self._custom_fg,
             hover_color=self._custom_item_hover,
             pressed_color=self._custom_item_pressed,
@@ -144,13 +178,17 @@ class CommandBar(ThemeAwareWidget, QWidget):
     def on_theme_applied(self, theme: ThemeDefinition) -> None:
         r = theme.resolver()
         self._bg = self._custom_bg if self._custom_bg else r.color("component.commandbar_bg")
-        self._border = self._custom_border if self._custom_border else r.color("component.commandbar_border")
+        self._border = (
+            self._custom_border if self._custom_border else r.color("component.commandbar_border")
+        )
         self._separator_color = r.color("component.commandbar_separator")
+
         for i in range(self._layout.count()):
             item = self._layout.itemAt(i)
             if item and item.widget():
                 if isinstance(item.widget(), _Separator):
                     item.widget().set_color(self._separator_color)
+
         self.update()
 
     def paintEvent(self, e):

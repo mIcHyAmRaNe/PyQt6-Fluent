@@ -14,7 +14,7 @@ class ProgressBar(ThemeAwareWidget, QWidget):
     def __init__(self, parent=None,
                  rail_color=None, fill_color=None):
         super().__init__(parent)
-        self.setFixedHeight(4)
+        self.setFixedHeight(6)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self._value = 0.0
         self._rail = QColor()
@@ -25,7 +25,7 @@ class ProgressBar(ThemeAwareWidget, QWidget):
         self._indet_pos = 0.0
 
         self._indet_ani = QPropertyAnimation(self, b"indet_pos", self)
-        self._indet_ani.setDuration(1500)
+        self._indet_ani.setDuration(888)
         self._indet_ani.setStartValue(-0.3)
         self._indet_ani.setEndValue(1.3)
         self._indet_ani.setLoopCount(-1)
@@ -46,8 +46,8 @@ class ProgressBar(ThemeAwareWidget, QWidget):
         if self._custom_rail:
             self._rail = self._custom_rail
         else:
-            self._rail = QColor(0, 0, 0, 26) if not theme.is_dark else QColor(255, 255, 255, 26)
-        self._fill = self._custom_fill if self._custom_fill else r.color("semantic.accent")
+            self._rail = r.color("component.progressbar_rail")
+        self._fill = self._custom_fill if self._custom_fill else r.color("component.progressbar_fill")
         self.update()
 
     def set_value(self, v: float):
@@ -78,12 +78,13 @@ class ProgressBar(ThemeAwareWidget, QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         rect = QRectF(self.rect())
+        r = 3.0
         path = QPainterPath()
-        path.addRoundedRect(rect, 2, 2)
+        path.addRoundedRect(rect, r, r)
         painter.fillPath(path, QBrush(self._rail))
 
         if self._indeterminate:
-            w = rect.width() * 0.3
+            w = rect.width() * 0.5
             x = self._indet_pos * rect.width()
             fill_rect = QRectF(x, rect.y(), w, rect.height()).intersected(rect)
         elif self._value > 0:
@@ -92,5 +93,5 @@ class ProgressBar(ThemeAwareWidget, QWidget):
             return
 
         fill_path = QPainterPath()
-        fill_path.addRoundedRect(fill_rect, 2, 2)
+        fill_path.addRoundedRect(fill_rect, r, r)
         painter.fillPath(fill_path, QBrush(self._fill))

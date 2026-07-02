@@ -9,6 +9,8 @@ import sys
 
 from PyQt6.QtWidgets import QDialog, QMainWindow
 
+from .icons import FluentIcon, IconEngine, SvgIcon  # noqa: F401
+from .icons.widget import IconWidget  # noqa: F401
 from .presets import CATPPUCCIN_FRAPPE as catppuccinTheme  # noqa: F401
 from .presets import DARK_THEME as darkTheme  # noqa: F401
 from .presets import LIGHT_THEME as lightTheme  # noqa: F401
@@ -16,14 +18,13 @@ from .tokens.component import ComponentTokens  # noqa: F401
 from .tokens.palette import Palette  # noqa: F401
 from .tokens.resolver import TokenResolver  # noqa: F401
 from .tokens.semantic import SemanticPalette  # noqa: F401
-from .tokens.theme import ThemeDefinition, ThemeManager, ThemeObserver  # noqa: F401
+from .tokens.theme import ThemeDefinition, ThemeManager, ThemeMode, ThemeObserver  # noqa: F401
 from .tokens.typography import Typography  # noqa: F401
 from .utils import start_system_move, toggle_max_state  # noqa: F401
 from .widgets._shared import (  # noqa: F401
     BackgroundAnimationWidget,
     DropShadow,
     FocusRing,
-    IconWidget,
     RippleEffect,
     ThemeAwareWidget,
     TranslateYAnimation,
@@ -97,22 +98,32 @@ class FramelessMainWindow(QMainWindow, FramelessWindow):
 __all__ = [
     "__version__",
     "__author__",
+    # Theme system
     "ThemeManager",
     "ThemeDefinition",
+    "ThemeMode",
     "ThemeObserver",
     "Palette",
     "SemanticPalette",
     "ComponentTokens",
     "TokenResolver",
     "Typography",
+    # Icon system
+    "FluentIcon",
+    "IconEngine",
+    "IconWidget",
+    "SvgIcon",
+    # Window
     "FramelessWindow",
     "FramelessDialog",
     "FramelessMainWindow",
     "AcrylicWindow",
     "WindowEffect",
+    # Shared primitives
     "ThemeAwareWidget",
     "BackgroundAnimationWidget",
     "TranslateYAnimation",
+    # Titlebar
     "TitleBar",
     "TitleBarBase",
     "StandardTitleBar",
@@ -121,6 +132,7 @@ __all__ = [
     "MinimizeButton",
     "MaximizeButton",
     "CloseButton",
+    # Buttons
     "Button",
     "ButtonBase",
     "PushButton",
@@ -132,34 +144,44 @@ __all__ = [
     "FilledButton",
     "Switch",
     "ToggleButton",
+    # Inputs
     "Input",
     "Rating",
     "SearchBox",
     "Slider",
     "Tag",
     "Textarea",
+    # Selection
     "CheckBox",
     "RadioButton",
+    # Feedback
     "Badge",
     "ProgressBar",
     "Spinner",
+    # Layout
     "Card",
     "Divider",
+    # Text
     "FluentLabel",
+    # Navigation
     "ComboBox",
     "TabView",
     "NavigationView",
+    # Data
     "DatePicker",
     "TimePicker",
     "NumberBox",
+    # Misc
     "Avatar",
     "CommandBar",
     "ContentDialog",
     "Expander",
     "InfoBar",
     "FluentTooltip",
+    # Utilities
     "start_system_move",
     "toggle_max_state",
+    # Presets
     "lightTheme",
     "darkTheme",
     "catppuccinTheme",

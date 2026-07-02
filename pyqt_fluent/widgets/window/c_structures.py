@@ -1,9 +1,17 @@
+"""Undocumented Win32 structures for window composition effects.
+
+Only structures/enums NOT available in win32more are defined here.
+Documented DWM types (DWMWINDOWATTRIBUTE, DWMNCRENDERINGPOLICY, DWM_BLURBEHIND)
+are imported from ``win32more.Windows.Win32.Graphics.Dwm`` in the modules that use them.
+"""
+
 from ctypes import POINTER, Structure, c_int
-from ctypes.wintypes import BOOL, DWORD, HRGN, HWND, RECT, UINT, ULONG
+from ctypes.wintypes import DWORD, HWND, RECT, UINT, ULONG
 from enum import Enum
 
 
 class WINDOWCOMPOSITIONATTRIB(Enum):
+    """Undocumented — not in win32more metadata."""
     WCA_UNDEFINED = 0
     WCA_NCRENDERING_ENABLED = 1
     WCA_NCRENDERING_POLICY = 2
@@ -38,6 +46,7 @@ class WINDOWCOMPOSITIONATTRIB(Enum):
 
 
 class ACCENT_STATE(Enum):
+    """Undocumented — not in win32more metadata."""
     ACCENT_DISABLED = 0
     ACCENT_ENABLE_GRADIENT = 1
     ACCENT_ENABLE_TRANSPARENTGRADIENT = 2
@@ -64,50 +73,6 @@ class WINDOWCOMPOSITIONATTRIBDATA(Structure):
     ]
 
 
-class DWMNCRENDERINGPOLICY(Enum):
-    DWMNCRP_USEWINDOWSTYLE = 0
-    DWMNCRP_DISABLED = 1
-    DWMNCRP_ENABLED = 2
-    DWMNCRP_LAS = 3
-
-
-class DWMWINDOWATTRIBUTE(Enum):
-    DWMWA_NCRENDERING_ENABLED = 1
-    DWMWA_NCRENDERING_POLICY = 2
-    DWMWA_TRANSITIONS_FORCEDISABLED = 3
-    DWMWA_ALLOW_NCPAINT = 4
-    DWMWA_CAPTION_BUTTON_BOUNDS = 5
-    DWMWA_NONCLIENT_RTL_LAYOUT = 6
-    DWMWA_FORCE_ICONIC_REPRESENTATION = 7
-    DWMWA_FLIP3D_POLICY = 8
-    DWMWA_EXTENDED_FRAME_BOUNDS = 9
-    DWMWA_HAS_ICONIC_BITMAP = 10
-    DWMWA_DISALLOW_PEEK = 11
-    DWMWA_EXCLUDED_FROM_PEEK = 12
-    DWMWA_CLOAK = 13
-    DWMWA_CLOAKED = 14
-    DWMWA_FREEZE_REPRESENTATION = 15
-    DWMWA_PASSIVE_UPDATE_MODE = 16
-    DWMWA_USE_HOSTBACKDROPBRUSH = 17
-    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-    DWMWA_WINDOW_CORNER_PREFERENCE = 33
-    DWMWA_BORDER_COLOR = 34
-    DWMWA_CAPTION_COLOR = 35
-    DWMWA_TEXT_COLOR = 36
-    DWMWA_VISIBLE_FRAME_BORDER_THICKNESS = 37
-    DWMWA_SYSTEMBACKDROP_TYPE = 38
-    DWMWA_LAST = 39
-
-
-class DWM_BLURBEHIND(Structure):
-    _fields_ = [
-        ("dwFlags", DWORD),
-        ("fEnable", BOOL),
-        ("hRgnBlur", HRGN),
-        ("fTransitionOnMaximized", BOOL),
-    ]
-
-
 class PWINDOWPOS(Structure):
     _fields_ = [
         ("hWnd", HWND),
@@ -120,7 +85,8 @@ class PWINDOWPOS(Structure):
     ]
 
 
-NCCALCSIZE_PARAMS = type("NCCALCSIZE_PARAMS", (Structure,), {"_fields_": [("rgrc", RECT * 3), ("lppos", POINTER(PWINDOWPOS))]})
-
+NCCALCSIZE_PARAMS = type("NCCALCSIZE_PARAMS", (Structure,), {
+    "_fields_": [("rgrc", RECT * 3), ("lppos", POINTER(PWINDOWPOS))]
+})
 
 LPNCCALCSIZE_PARAMS = POINTER(NCCALCSIZE_PARAMS)

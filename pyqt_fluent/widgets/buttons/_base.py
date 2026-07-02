@@ -6,21 +6,6 @@ from PyQt6.QtCore import QPointF, QRectF, QSize, Qt
 from PyQt6.QtGui import QBrush, QColor, QFontMetrics, QLinearGradient, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QAbstractButton
 
-
-def _blend(base: QColor, overlay: QColor) -> QColor:
-    """Alpha composite *overlay* over *base*, returning an opaque QColor."""
-    if overlay.alpha() >= 255:
-        return overlay
-    if overlay.alpha() <= 0:
-        return base
-    a = overlay.alphaF()
-    return QColor(
-        int(base.red() * (1 - a) + overlay.red() * a),
-        int(base.green() * (1 - a) + overlay.green() * a),
-        int(base.blue() * (1 - a) + overlay.blue() * a),
-        255,
-    )
-
 from ...tokens.theme import ThemeDefinition
 from .._shared.background_animation import BackgroundAnimationWidget
 from .._shared.focus_ring import FocusRing

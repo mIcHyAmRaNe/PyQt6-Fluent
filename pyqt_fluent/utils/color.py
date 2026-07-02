@@ -5,6 +5,21 @@ from __future__ import annotations
 from PyQt6.QtGui import QColor
 
 
+def blend(base: QColor, overlay: QColor) -> QColor:
+    """Alpha composite *overlay* over *base*, returning an opaque QColor."""
+    if overlay.alpha() >= 255:
+        return overlay
+    if overlay.alpha() <= 0:
+        return base
+    a = overlay.alphaF()
+    return QColor(
+        int(base.red() * (1 - a) + overlay.red() * a),
+        int(base.green() * (1 - a) + overlay.green() * a),
+        int(base.blue() * (1 - a) + overlay.blue() * a),
+        255,
+    )
+
+
 def derive_accent_variants(base: QColor, is_dark: bool) -> dict:
     """Derive accent hover/pressed from a base accent colour.
 

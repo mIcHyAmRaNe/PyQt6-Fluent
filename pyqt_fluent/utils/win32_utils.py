@@ -1,12 +1,18 @@
 import sys
 import warnings
-from ctypes import byref, c_bool, c_int, c_ulong, windll
+from ctypes import byref, c_bool, c_int, c_ulong
 from winreg import HKEY_CURRENT_USER, KEY_READ, CloseKey, OpenKey, QueryValueEx
 
 from PyQt6.QtCore import QEvent, QObject, QOperatingSystemVersion, qVersion
 from PyQt6.QtGui import QColor, QGuiApplication
 from PyQt6.QtWidgets import QWidget
 from win32more.Windows.Win32.Graphics import Gdi as _gdi
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DwmGetColorizationColor as _DwmGetColorizationColor,
+)
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DwmIsCompositionEnabled as _DwmIsCompositionEnabled,
+)
 from win32more.Windows.Win32.UI import HiDpi as _hidpi
 from win32more.Windows.Win32.UI import Shell as _shell
 from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
@@ -16,12 +22,8 @@ QT_VERSION = tuple(int(v) for v in qVersion().split("."))
 
 
 def get_system_accent_color():
-    DwmGetColorizationColor = windll.dwmapi.DwmGetColorizationColor
-    DwmGetColorizationColor.restype = c_ulong
-    DwmGetColorizationColor.argtypes = [c_ulong, c_bool]
-
     color = c_ulong()
-    code = DwmGetColorizationColor(color, c_bool())
+    code = _DwmGetColorizationColor(byref(color), byref(c_bool()))
     if code != 0:
         warnings.warn("Unable to obtain system accent color.")
         return QColor()
@@ -115,15 +117,11 @@ def get_resize_border_thickness(h_wnd, horizontal=True):
 
 
 def get_system_metrics(h_wnd, index, horizontal):
-    if not hasattr(windll.user32, "GetSystemMetricsForDpi"):
-        return _wm.GetSystemMetrics(index)
     dpi = get_dpi_for_window(h_wnd, horizontal)
     return _hidpi.GetSystemMetricsForDpi(index, dpi)
 
 
 def get_dpi_for_window(h_wnd, horizontal=True):
-    if hasattr(windll.user32, "GetDpiForWindow"):
-        return _hidpi.GetDpiForWindow(h_wnd)
     hdc = _gdi.GetDC(int(h_wnd))
     if not hdc:
         return 96
@@ -150,9 +148,9 @@ def find_window(h_wnd):
 
 
 def is_composition_enabled():
-    b_result = c_int(0)
-    windll.dwmapi.DwmIsCompositionEnabled(byref(b_result))
-    return bool(b_result.value)
+    result = c_int(0)
+    _DwmIsCompositionEnabled(byref(result))
+    return bool(result.value)
 
 
 def is_greater_equal_version(version):

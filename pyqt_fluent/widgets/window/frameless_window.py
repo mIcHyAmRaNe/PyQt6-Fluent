@@ -12,7 +12,7 @@ from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
 
 from ...tokens.theme import ThemeDefinition, ThemeManager, ThemeObserver
 from ...utils import win32_utils as win_utils
-from ...utils.theme import Theme, system_theme
+from ...utils.theme import ThemeMode, system_theme
 from ...utils.win32_utils import Taskbar, get_system_accent_color, is_system_border_accent_enabled
 from ..titlebar import TitleBar
 from .c_structures import LPNCCALCSIZE_PARAMS
@@ -177,7 +177,7 @@ class FramelessWindow(QWidget, ThemeObserver):
 
     def _on_system_theme_changed(self):
         theme = system_theme()
-        dark = theme == Theme.DARK
+        dark = theme == ThemeMode.DARK
         if win_utils.is_greater_equal_win11():
             self.window_effect.set_dark_mode(self.winId(), dark)
             self.window_effect.set_caption_color(

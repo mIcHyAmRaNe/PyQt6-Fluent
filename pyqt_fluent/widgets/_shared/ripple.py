@@ -1,15 +1,10 @@
 """Ripple effect — Material-like click ripple animation."""
 
-from PyQt6.QtCore import QEasingCurve, QObject, QPointF, QPropertyAnimation, QRectF, pyqtProperty
+from PyQt6.QtCore import QObject, QPointF, QPropertyAnimation, QRectF, pyqtProperty
 from PyQt6.QtGui import QColor, QPainter, QPainterPath, QRadialGradient
 from PyQt6.QtWidgets import QWidget
 
-
-def _winui_easing() -> QEasingCurve:
-    """WinUI 3 FastOutSlowIn — cubic-bezier(0.1, 0.9, 0.2, 1.0)."""
-    e = QEasingCurve(QEasingCurve.Type.BezierSpline)
-    e.addCubicBezierSegment(QPointF(0.1, 0.9), QPointF(0.2, 1.0), QPointF(1.0, 1.0))
-    return e
+from ...utils.animation import winui_easing
 
 
 class RippleEffect(QObject):
@@ -27,7 +22,7 @@ class RippleEffect(QObject):
         self._origin = QPointF()
         self._anim = QPropertyAnimation(self, b"radius", self)
         self._anim.setDuration(250)
-        self._anim.setEasingCurve(_winui_easing())
+        self._anim.setEasingCurve(winui_easing())
         self._anim.finished.connect(self._on_ripple_finished)
 
     def _get_radius(self) -> float:

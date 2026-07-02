@@ -1,9 +1,29 @@
 import warnings
 from ctypes import POINTER, WinDLL, byref, c_int, pointer, sizeof
-from ctypes.wintypes import DWORD, LONG, LPCVOID
+from ctypes.wintypes import DWORD
 from platform import version
 
 from PyQt6.QtGui import QColor
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DWM_BB_ENABLE,
+    DWM_BLURBEHIND,
+    DWMNCRP_DISABLED,
+    DWMNCRP_ENABLED,
+    DWMWA_BORDER_COLOR,
+    DWMWA_CAPTION_COLOR,
+    DWMWA_NCRENDERING_POLICY,
+    DWMWA_SYSTEMBACKDROP_TYPE,
+    DWMWA_USE_IMMERSIVE_DARK_MODE,
+)
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DwmEnableBlurBehindWindow as _DwmEnableBlurBehindWindow,
+)
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DwmExtendFrameIntoClientArea as _DwmExtendFrameIntoClientArea,
+)
+from win32more.Windows.Win32.Graphics.Dwm import (
+    DwmSetWindowAttribute as _DwmSetWindowAttribute,
+)
 from win32more.Windows.Win32.UI import WindowsAndMessaging as _wm
 from win32more.Windows.Win32.UI.Controls import MARGINS as _MARGINS
 
@@ -15,9 +35,6 @@ from ...utils.win32_utils import (
 from .c_structures import (
     ACCENT_POLICY,
     ACCENT_STATE,
-    DWM_BLURBEHIND,
-    DWMNCRENDERINGPOLICY,
-    DWMWINDOWATTRIBUTE,
     WINDOWCOMPOSITIONATTRIB,
     WINDOWCOMPOSITIONATTRIBDATA,
 )
@@ -26,21 +43,14 @@ from .c_structures import (
 class WindowsWindowEffect:
     def __init__(self, window):
         self.window = window
-        self.user32 = WinDLL("user32")
-        self.dwmapi = WinDLL("dwmapi")
-        self.SetWindowCompositionAttribute = self.user32.SetWindowCompositionAttribute
-        self.DwmExtendFrameIntoClientArea = self.dwmapi.DwmExtendFrameIntoClientArea
-        self.DwmEnableBlurBehindWindow = self.dwmapi.DwmEnableBlurBehindWindow
-        self.DwmSetWindowAttribute = self.dwmapi.DwmSetWindowAttribute
 
+        # SetWindowCompositionAttribute is undocumented — keep ctypes
+        self._user32 = WinDLL("user32")
+        self.SetWindowCompositionAttribute = self._user32.SetWindowCompositionAttribute
         self.SetWindowCompositionAttribute.restype = c_int
-        self.DwmExtendFrameIntoClientArea.restype = LONG
-        self.DwmEnableBlurBehindWindow.restype = LONG
-        self.DwmSetWindowAttribute.restype = LONG
-        self.SetWindowCompositionAttribute.argtypes = [c_int, POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
-        self.DwmSetWindowAttribute.argtypes = [c_int, DWORD, LPCVOID, DWORD]
-        self.DwmExtendFrameIntoClientArea.argtypes = [c_int, POINTER(_MARGINS)]
-        self.DwmEnableBlurBehindWindow.argtypes = [c_int, POINTER(DWM_BLURBEHIND)]
+        self.SetWindowCompositionAttribute.argtypes = [
+            c_int, POINTER(WINDOWCOMPOSITIONATTRIBDATA)
+        ]
 
         self.accent_policy = ACCENT_POLICY()
         self.win_comp_attr_data = WINDOWCOMPOSITIONATTRIBDATA()
@@ -69,37 +79,28 @@ class WindowsWindowEffect:
             return
         h_wnd = int(h_wnd)
         color_ref = DWORD(color.red() | (color.green() << 8) | (color.blue() << 16))
-        self.DwmSetWindowAttribute(
-            h_wnd, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR.value, byref(color_ref), 4
-        )
+        _DwmSetWindowAttribute(h_wnd, DWMWA_BORDER_COLOR, byref(color_ref), 4)
 
     def set_dark_mode(self, h_wnd, is_dark: bool):
         if not is_greater_equal_win11():
             return
         h_wnd = int(h_wnd)
-        self.DwmSetWindowAttribute(
-            h_wnd,
-            DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE.value,
-            byref(c_int(1 if is_dark else 0)),
-            4,
+        _DwmSetWindowAttribute(
+            h_wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, byref(c_int(1 if is_dark else 0)), 4
         )
 
     def remove_border_accent_color(self, h_wnd):
         if not is_greater_equal_win11():
             return
         h_wnd = int(h_wnd)
-        self.DwmSetWindowAttribute(
-            h_wnd, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR.value, byref(DWORD(0xFFFFFFFF)), 4
-        )
+        _DwmSetWindowAttribute(h_wnd, DWMWA_BORDER_COLOR, byref(DWORD(0xFFFFFFFF)), 4)
 
     def set_caption_color(self, h_wnd, color: QColor):
         if not is_greater_equal_win11():
             return
         h_wnd = int(h_wnd)
         color_ref = DWORD(color.red() | (color.green() << 8) | (color.blue() << 16))
-        self.DwmSetWindowAttribute(
-            h_wnd, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR.value, byref(color_ref), 4
-        )
+        _DwmSetWindowAttribute(h_wnd, DWMWA_CAPTION_COLOR, byref(color_ref), 4)
 
     def set_mica_effect(self, h_wnd, is_dark_mode=False, is_alt=False):
         if not is_greater_equal_win11():
@@ -107,7 +108,7 @@ class WindowsWindowEffect:
             return
         h_wnd = int(h_wnd)
         margins = _MARGINS(16777215, 16777215, 0, 0)
-        self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
+        _DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
         self.win_comp_attr_data.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.accent_policy.AccentState = ACCENT_STATE.ACCENT_ENABLE_HOSTBACKDROP.value
         self.SetWindowCompositionAttribute(h_wnd, pointer(self.win_comp_attr_data))
@@ -115,19 +116,15 @@ class WindowsWindowEffect:
             self.win_comp_attr_data.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_USEDARKMODECOLORS.value
             self.SetWindowCompositionAttribute(h_wnd, pointer(self.win_comp_attr_data))
         if int(version().split(".")[2]) < 22523:
-            self.DwmSetWindowAttribute(h_wnd, 1029, byref(c_int(1)), 4)
+            _DwmSetWindowAttribute(h_wnd, 1029, byref(c_int(1)), 4)
         else:
-            self.DwmSetWindowAttribute(
-                h_wnd,
-                DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE.value,
-                byref(c_int(4 if is_alt else 2)),
-                4,
+            _DwmSetWindowAttribute(
+                h_wnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                byref(c_int(4 if is_alt else 2)), 4,
             )
-        self.DwmSetWindowAttribute(
-            h_wnd,
-            DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE.value,
-            byref(c_int(1 * is_dark_mode)),
-            4,
+        _DwmSetWindowAttribute(
+            h_wnd, DWMWA_USE_IMMERSIVE_DARK_MODE,
+            byref(c_int(1 * is_dark_mode)), 4,
         )
 
     def remove_background_effect(self, h_wnd):
@@ -140,42 +137,33 @@ class WindowsWindowEffect:
             return
         h_wnd = int(h_wnd)
         margins = _MARGINS(-1, -1, -1, -1)
-        self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
+        _DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
 
     def add_menu_shadow_effect(self, h_wnd):
         if not is_composition_enabled():
             return
         h_wnd = int(h_wnd)
-        self.DwmSetWindowAttribute(
-            h_wnd,
-            DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY.value,
-            byref(c_int(DWMNCRENDERINGPOLICY.DWMNCRP_ENABLED.value)),
-            4,
+        _DwmSetWindowAttribute(
+            h_wnd, DWMWA_NCRENDERING_POLICY,
+            byref(c_int(DWMNCRP_ENABLED)), 4,
         )
         margins = _MARGINS(-1, -1, -1, -1)
-        self.DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
+        _DwmExtendFrameIntoClientArea(h_wnd, byref(margins))
 
     def remove_shadow_effect(self, h_wnd):
         h_wnd = int(h_wnd)
-        self.DwmSetWindowAttribute(
-            h_wnd,
-            DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY.value,
-            byref(c_int(DWMNCRENDERINGPOLICY.DWMNCRP_DISABLED.value)),
-            4,
+        _DwmSetWindowAttribute(
+            h_wnd, DWMWA_NCRENDERING_POLICY,
+            byref(c_int(DWMNCRP_DISABLED)), 4,
         )
 
     def add_window_animation(self, h_wnd):
         h_wnd = int(h_wnd)
         style = _wm.GetWindowLongW(h_wnd, _wm.GWL_STYLE)
         _wm.SetWindowLongW(
-            h_wnd,
-            _wm.GWL_STYLE,
-            style
-            | _wm.WS_MINIMIZEBOX
-            | _wm.WS_MAXIMIZEBOX
-            | _wm.WS_CAPTION
-            | _wm.CS_DBLCLKS
-            | _wm.WS_THICKFRAME,
+            h_wnd, _wm.GWL_STYLE,
+            style | _wm.WS_MINIMIZEBOX | _wm.WS_MAXIMIZEBOX
+            | _wm.WS_CAPTION | _wm.CS_DBLCLKS | _wm.WS_THICKFRAME,
         )
 
     def disable_maximize_button(self, h_wnd):
@@ -184,8 +172,12 @@ class WindowsWindowEffect:
         _wm.SetWindowLongW(h_wnd, _wm.GWL_STYLE, style & ~_wm.WS_MAXIMIZEBOX)
 
     def enable_blur_behind_window(self, h_wnd):
-        blur_behind = DWM_BLURBEHIND(1, True, 0, False)
-        self.DwmEnableBlurBehindWindow(int(h_wnd), byref(blur_behind))
+        blur_behind = DWM_BLURBEHIND()
+        blur_behind.dwFlags = DWM_BB_ENABLE
+        blur_behind.fEnable = True
+        blur_behind.hRgnBlur = 0
+        blur_behind.fTransitionOnMaximized = False
+        _DwmEnableBlurBehindWindow(int(h_wnd), byref(blur_behind))
 
     def remove_window_animation(self, h_wnd):
         h_wnd = int(h_wnd)
@@ -196,18 +188,14 @@ class WindowsWindowEffect:
         style &= ~_wm.WS_THICKFRAME
         _wm.SetWindowLongW(h_wnd, _wm.GWL_STYLE, style)
         _wm.SetWindowPos(
-            h_wnd,
-            None,
-            0,
-            0,
-            0,
-            0,
-            _wm.SWP_NOMOVE
-            | _wm.SWP_NOSIZE
-            | _wm.SWP_NOZORDER
-            | _wm.SWP_FRAMECHANGED,
+            h_wnd, None, 0, 0, 0, 0,
+            _wm.SWP_NOMOVE | _wm.SWP_NOSIZE | _wm.SWP_NOZORDER | _wm.SWP_FRAMECHANGED,
         )
 
     def disable_blur_behind_window(self, h_wnd):
-        blur_behind = DWM_BLURBEHIND(1, False, 0, False)
-        self.DwmEnableBlurBehindWindow(int(h_wnd), byref(blur_behind))
+        blur_behind = DWM_BLURBEHIND()
+        blur_behind.dwFlags = DWM_BB_ENABLE
+        blur_behind.fEnable = False
+        blur_behind.hRgnBlur = 0
+        blur_behind.fTransitionOnMaximized = False
+        _DwmEnableBlurBehindWindow(int(h_wnd), byref(blur_behind))

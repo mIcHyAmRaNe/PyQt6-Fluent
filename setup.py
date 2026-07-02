@@ -21,7 +21,7 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(),
     package_data={
-        "pyqt_fluent.resources": ["icons/close.svg"],
+        "pyqt_fluent.resources": ["icons/*.svg"],
     },
     include_package_data=True,
     install_requires=[

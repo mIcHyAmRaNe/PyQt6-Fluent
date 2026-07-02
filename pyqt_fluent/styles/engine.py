@@ -8,6 +8,10 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..tokens.theme import ThemeDefinition
 
 from PyQt6.QtGui import QColor
 
@@ -149,10 +153,20 @@ class StylesheetEngine:
 
         ``role`` can be any key registered in ``_BUILT_INS`` (e.g. ``"QPushButton"``)
         or previously registered via ``register()``.
+
+        Results are cached per ``(role, theme_id)`` to avoid redundant interpolation.
         """
+        cache_key = (role, id(theme))
+        if not hasattr(cls, "_role_cache"):
+            cls._role_cache: dict[tuple, str] = {}
+        if cache_key in cls._role_cache:
+            return cls._role_cache[cache_key]
+
         r = theme.resolver()
         engine = cls(r, theme.typography)
-        return engine.generate(role)
+        qss = engine.generate(role)
+        cls._role_cache[cache_key] = qss
+        return qss
 
 
 _BUILT_INS: dict[str, str] = {

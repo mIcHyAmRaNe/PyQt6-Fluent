@@ -7,8 +7,8 @@ from PyQt6.QtGui import QColor, QFont, QPainter, QPixmap
 from PyQt6.QtWidgets import QSizePolicy
 
 from ...tokens.theme import ThemeDefinition
-from ...utils.color import derive_accent_variants
-from ._base import ButtonBase, _blend
+from ...utils.color import blend, derive_accent_variants
+from ._base import ButtonBase
 
 
 class Button(ButtonBase):
@@ -121,8 +121,8 @@ class Button(ButtonBase):
             self._border = QColor(0, 0, 0, 0)
 
         if self._my_kind == self.Kind.FILLED:
-            self._bg_hover = _blend(self._bg_rest, self._bg_hover)
-            self._bg_pressed = _blend(self._bg_rest, self._bg_pressed)
+            self._bg_hover = blend(self._bg_rest, self._bg_hover)
+            self._bg_pressed = blend(self._bg_rest, self._bg_pressed)
 
         # User overrides
         if self._custom_fg:

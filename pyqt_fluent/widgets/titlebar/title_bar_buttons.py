@@ -1,12 +1,10 @@
 from enum import Enum
-from importlib.resources import files as _resources
 
-from PyQt6.QtCore import QFile, QPointF, QRectF, Qt, pyqtProperty
+from PyQt6.QtCore import QPointF, QRectF, Qt, pyqtProperty
 from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPen
-from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QAbstractButton
-from PyQt6.QtXml import QDomDocument
 
+from ...icons.engine import FluentIcon, IconEngine
 from ...tokens.theme import ThemeDefinition, ThemeManager, ThemeObserver
 
 
@@ -135,16 +133,13 @@ class TitleBarButton(QAbstractButton, ThemeObserver):
 
 
 class SvgTitleBarButton(TitleBarButton):
-    def __init__(self, icon_path, parent=None):
+    def __init__(self, icon_name, parent=None):
         super().__init__(parent)
-        self._svg_dom = QDomDocument()
-        self.set_icon(icon_path)
+        self._icon_name = icon_name
+        self._engine = IconEngine.instance()
 
-    def set_icon(self, icon_path):
-        f = QFile(icon_path)
-        f.open(QFile.OpenModeFlag.ReadOnly)
-        self._svg_dom.setContent(f.readAll())
-        f.close()
+    def set_icon(self, icon_name):
+        self._icon_name = icon_name
 
     def paintEvent(self, e):
         painter = QPainter(self)
@@ -153,13 +148,7 @@ class SvgTitleBarButton(TitleBarButton):
         painter.setBrush(bg_color)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(self.rect())
-        color = color.name()
-        path_nodes = self._svg_dom.elementsByTagName("path")
-        for i in range(path_nodes.length()):
-            element = path_nodes.at(i).toElement()
-            element.setAttribute("stroke", color)
-        renderer = QSvgRenderer(self._svg_dom.toByteArray())
-        renderer.render(painter, QRectF(self.rect()))
+        self._engine.render(painter, QRectF(self.rect()), self._icon_name, color=color)
 
 
 class MinimizeButton(TitleBarButton):
@@ -216,8 +205,7 @@ class MaximizeButton(TitleBarButton):
 
 class CloseButton(SvgTitleBarButton):
     def __init__(self, parent=None):
-        icon_path = str(_resources("pyqt_fluent.resources").joinpath("icons", "close.svg"))
-        super().__init__(icon_path, parent)
+        super().__init__(FluentIcon.CLOSE, parent)
         self._apply_close_overrides()
 
     def _apply_close_overrides(self):

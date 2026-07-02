@@ -4,6 +4,7 @@ from PyQt6.QtCore import QRectF, QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
+from ...icons.engine import FluentIcon, IconEngine
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
 
@@ -30,6 +31,8 @@ class Expander(ThemeAwareWidget, QWidget):
         self._custom_header_hover = QColor(header_hover) if header_hover else None
         self._custom_border = QColor(border_color) if border_color else None
         self._custom_arrow = QColor(arrow_color) if arrow_color else None
+
+        self._icon_engine = IconEngine.instance()
 
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
@@ -114,6 +117,12 @@ class Expander(ThemeAwareWidget, QWidget):
         painter.setPen(self._fg)
         text_rect = QRectF(arrow_x + arrow_size + 8, 0, w - arrow_x - arrow_size - 16, self._header_height)
         painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._title)
+
+        # Chevron icon (using icon engine)
+        chevron = FluentIcon.CHEVRON_UP if self._expanded else FluentIcon.CHEVRON_DOWN
+        IconEngine.instance().render(
+            painter, QRectF(w - 30, (self._header_height - 12) / 2, 12, 12),
+            chevron, color=self._arrow_color)
 
     def mousePressEvent(self, e):
         if e.button() == Qt.MouseButton.LeftButton and e.position().y() <= self._header_height:

@@ -1,5 +1,8 @@
 import sys
 
+from ..tokens.theme import ThemeMode  # noqa: F401
+from .animation import winui_easing  # noqa: F401
+from .color import blend, derive_accent_variants  # noqa: F401
 from .dpi import DpiHelper  # noqa: F401
 from .theme import Theme, is_dark, is_light, system_theme  # noqa: F401
 
