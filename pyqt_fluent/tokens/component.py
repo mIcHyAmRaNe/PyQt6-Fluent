@@ -176,17 +176,17 @@ class ComponentTokens:
     button_height: int = 32
     button_padding_horizontal: int = 12
     button_padding_vertical: int = 4
-    button_radius: int = 5
+    button_radius: int = 4
 
     input_height: int = 32
     input_padding_horizontal: int = 8
     input_padding_vertical: int = 4
 
-    checkbox_size: int = 16
-    radio_button_size: int = 16
+    checkbox_size: int = 18
+    radio_button_size: int = 18
 
-    slider_height: int = 4
-    slider_handle_size: int = 16
+    slider_height: int = 6
+    slider_handle_size: int = 20
     slider_track: str = "palette.black_6"
     slider_fill: str = "semantic.accent"
     slider_thumb: str = "semantic.control_fg"
@@ -194,16 +194,30 @@ class ComponentTokens:
     scrollbar_width: int = 8
     scrollbar_handle_min_size: int = 24
 
+    # ── ProgressBar ────────────────────────────────────────
+    progressbar_height: int = 6
+    progressbar_radius: int = 3
+    progressbar_rail: str = "palette.stroke_default"
+    progressbar_fill: str = "semantic.accent"
+
     # Switch
-    switch_width: int = 44
+    switch_width: int = 40
     switch_height: int = 20
     switch_thumb_size: int = 16
-    switch_track_off: str = "palette.black_8"
+    switch_track_off: str = "palette.switch_track_off"
     switch_track_on: str = "semantic.accent"
     switch_thumb: str = "semantic.switch_thumb"
-    shadow: str = "semantic.shadow"
+    shadow: str = "palette.black_20"
     shadow_blur: float = 16.0
     shadow_offset_y: float = 4.0
+
+    # ── Animation durations (WinUI 3 / Fluent 2) ─────────────
+    # From Microsoft docs: cubic-bezier(0,0,0,1) durations
+    duration_fast: int = 83       # Fade in/out
+    duration_normal: int = 167    # Direct entrance/exit, micro-interactions
+    duration_medium: int = 250    # Existing elements point-to-point
+    duration_slow: int = 333      # Strong entrance
+    progress_indeterminate_duration: int = 888  # FluUI standard
 
     # Scrollbar tokens (referenced from semantic)
     scrollbar_bg: str = "semantic.scrollbar_bg"

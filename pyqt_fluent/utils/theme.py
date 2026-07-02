@@ -1,9 +1,20 @@
-from enum import Enum
+import warnings
+
+from ..tokens.theme import ThemeMode
 
 
-class Theme(Enum):
-    LIGHT = "light"
-    DARK = "dark"
+class Theme:
+    """Deprecated — use ``ThemeMode`` from ``tokens.theme`` instead."""
+
+    LIGHT = ThemeMode.LIGHT
+    DARK = ThemeMode.DARK
+
+    def __init_subclass__(cls, **kw):
+        warnings.warn(
+            "Theme is deprecated, use ThemeMode from pyqt_fluent.tokens.theme",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
 
 def system_theme():
@@ -15,14 +26,14 @@ def system_theme():
         )
         value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
         winreg.CloseKey(key)
-        return Theme.DARK if value == 0 else Theme.LIGHT
+        return ThemeMode.DARK if value == 0 else ThemeMode.LIGHT
     except Exception:
-        return Theme.LIGHT
+        return ThemeMode.LIGHT
 
 
 def is_dark():
-    return system_theme() == Theme.DARK
+    return system_theme() == ThemeMode.DARK
 
 
 def is_light():
-    return system_theme() == Theme.LIGHT
+    return system_theme() == ThemeMode.LIGHT

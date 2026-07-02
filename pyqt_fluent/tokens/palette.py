@@ -196,6 +196,102 @@ class Palette:
     solid_bg_tertiary: PaletteToken = PaletteToken("solid_bg_tertiary", QColor(249, 249, 249), QColor(40, 40, 40))
     solid_bg_quarternary: PaletteToken = PaletteToken("solid_bg_quarternary", QColor(255, 255, 255), QColor(44, 44, 44))
 
+    # Switch track off (FluentUI QML: light rgba(253,253,253,1) / dark rgba(50,50,50,1))
+    switch_track_off: PaletteToken = PaletteToken("switch_track_off", QColor(253, 253, 253), QColor(50, 50, 50))
+    # Switch track off border (FluentUI QML: light rgba(141,141,141,1) / dark rgba(161,161,161,1))
+    switch_track_off_border: PaletteToken = PaletteToken("switch_track_off_border", QColor(141, 141, 141), QColor(161, 161, 161))
+    # Switch track hovered (FluentUI QML: light rgba(240,240,240,1) / dark rgba(62,62,62,1))
+    switch_track_hovered: PaletteToken = PaletteToken("switch_track_hovered", QColor(240, 240, 240), QColor(62, 62, 62))
+    # Switch track disabled (FluentUI QML: light rgba(233,233,233,1) / dark rgba(82,82,82,1))
+    switch_track_disabled: PaletteToken = PaletteToken("switch_track_disabled", QColor(233, 233, 233), QColor(82, 82, 82))
+    # Switch border disabled (FluentUI QML: light rgba(200,200,200,1) / dark rgba(50,50,50,1))
+    switch_border_disabled: PaletteToken = PaletteToken("switch_border_disabled", QColor(200, 200, 200), QColor(50, 50, 50))
+    # Switch thumb off (FluentUI QML: light rgba(93,93,93,1) / dark rgba(208,208,208,1))
+    switch_thumb_off: PaletteToken = PaletteToken("switch_thumb_off", QColor(93, 93, 93), QColor(208, 208, 208))
+    # Switch thumb disabled (FluentUI QML: light rgba(150,150,150,1) / dark rgba(50,50,50,1))
+    switch_thumb_disabled: PaletteToken = PaletteToken("switch_thumb_disabled", QColor(150, 150, 150), QColor(50, 50, 50))
+    # Switch thumb checked (FluentUI QML: light rgba(255,255,255,1) / dark rgba(0,0,0,1))
+    switch_thumb_checked: PaletteToken = PaletteToken("switch_thumb_checked", QColor(255, 255, 255), QColor(0, 0, 0))
+
+    # ── FluControlBackground shadow (high-perf stacked border shadow) ──
+    shadow_light: PaletteToken = PaletteToken("shadow_light", QColor(153, 153, 153), QColor(0, 0, 0))
+
+    # ── TextBox background states (FluTextBoxBackground) ──
+    textbox_bg_normal: PaletteToken = PaletteToken("textbox_bg_normal", QColor(254, 254, 254), QColor(62, 62, 62))
+    textbox_bg_hovered: PaletteToken = PaletteToken("textbox_bg_hovered", QColor(251, 251, 251), QColor(68, 68, 68))
+    textbox_bg_focused: PaletteToken = PaletteToken("textbox_bg_focused", QColor(255, 255, 255), QColor(36, 36, 36))
+    textbox_bg_disabled: PaletteToken = PaletteToken("textbox_bg_disabled", QColor(252, 252, 252), QColor(59, 59, 59))
+    textbox_border_start: PaletteToken = PaletteToken("textbox_border_start", QColor(232, 232, 232), QColor(66, 66, 66))
+    textbox_border_end: PaletteToken = PaletteToken("textbox_border_end", QColor(132, 132, 132), QColor(123, 123, 123))
+
+    # ── TextBox text colors (FluTextBox) ──
+    textbox_text: PaletteToken = PaletteToken("textbox_text", QColor(27, 27, 27), QColor(255, 255, 255))
+    textbox_text_disabled: PaletteToken = PaletteToken("textbox_text_disabled", QColor(160, 160, 160), QColor(131, 131, 131))
+    textbox_placeholder: PaletteToken = PaletteToken("textbox_placeholder", QColor(96, 96, 96), QColor(210, 210, 210))
+    textbox_placeholder_focus: PaletteToken = PaletteToken("textbox_placeholder_focus", QColor(141, 141, 141), QColor(152, 152, 152))
+    textbox_placeholder_disabled: PaletteToken = PaletteToken("textbox_placeholder_disabled", QColor(160, 160, 160), QColor(131, 131, 131))
+
+    # ── Button colors (FluButton) ──
+    button_bg: PaletteToken = PaletteToken("button_bg", QColor(254, 254, 254), QColor(62, 62, 62))
+    button_bg_hover: PaletteToken = PaletteToken("button_bg_hover", QColor(246, 246, 246), QColor(68, 68, 68))
+    button_bg_disabled: PaletteToken = PaletteToken("button_bg_disabled", QColor(251, 251, 251), QColor(59, 59, 59))
+    button_divider: PaletteToken = PaletteToken("button_divider", QColor(233, 233, 233), QColor(80, 80, 80))
+    button_text_pressed: PaletteToken = PaletteToken("button_text_pressed", QColor(96, 96, 96), QColor(162, 162, 162))
+    button_text_disabled: PaletteToken = PaletteToken("button_text_disabled", QColor(160, 160, 160), QColor(131, 131, 131))
+
+    # ── CheckBox colors (FluCheckBox) ──
+    checkbox_bg: PaletteToken = PaletteToken("checkbox_bg", QColor(247, 247, 247), QColor(45, 45, 45))
+    checkbox_bg_hover: PaletteToken = PaletteToken("checkbox_bg_hover", QColor(236, 236, 236), QColor(72, 72, 72))
+    checkbox_bg_disabled: PaletteToken = PaletteToken("checkbox_bg_disabled", QColor(253, 253, 253), QColor(50, 50, 50))
+    checkbox_border: PaletteToken = PaletteToken("checkbox_border", QColor(136, 136, 136), QColor(160, 160, 160))
+    checkbox_border_hover: PaletteToken = PaletteToken("checkbox_border_hover", QColor(135, 135, 135), QColor(167, 167, 167))
+    checkbox_border_pressed: PaletteToken = PaletteToken("checkbox_border_pressed", QColor(191, 191, 191), QColor(90, 90, 90))
+    checkbox_border_disabled: PaletteToken = PaletteToken("checkbox_border_disabled", QColor(199, 199, 199), QColor(82, 82, 82))
+    checkbox_checked_disabled: PaletteToken = PaletteToken("checkbox_checked_disabled", QColor(199, 199, 199), QColor(82, 82, 82))
+
+    # ── RadioButton colors (FluRadioButton) ──
+    radio_bg: PaletteToken = PaletteToken("radio_bg", QColor(255, 255, 255), QColor(50, 50, 50))
+    radio_bg_hover: PaletteToken = PaletteToken("radio_bg_hover", QColor(222, 222, 222), QColor(43, 43, 43))
+    radio_bg_disabled: PaletteToken = PaletteToken("radio_bg_disabled", QColor(222, 222, 222), QColor(43, 43, 43))
+    radio_bg_checked_disabled: PaletteToken = PaletteToken("radio_bg_checked_disabled", QColor(159, 159, 159), QColor(159, 159, 159))
+    radio_border: PaletteToken = PaletteToken("radio_border", QColor(141, 141, 141), QColor(161, 161, 161))
+    radio_border_disabled: PaletteToken = PaletteToken("radio_border_disabled", QColor(198, 198, 198), QColor(82, 82, 82))
+
+    # ── Menu colors (FluMenu) ──
+    menu_bg: PaletteToken = PaletteToken("menu_bg", QColor(252, 252, 252), QColor(45, 45, 45))
+    menu_border: PaletteToken = PaletteToken("menu_border", QColor(191, 191, 191), QColor(26, 26, 26))
+
+    # ── ComboBox popup colors ──
+    combobox_popup_bg: PaletteToken = PaletteToken("combobox_popup_bg", QColor(255, 255, 255), QColor(43, 43, 43))
+    combobox_popup_border: PaletteToken = PaletteToken("combobox_popup_border", QColor(191, 191, 191), QColor(26, 26, 26))
+
+    # ── Slider colors (FluSlider) ──
+    slider_handle: PaletteToken = PaletteToken("slider_handle", QColor(255, 255, 255), QColor(69, 69, 69))
+    slider_track: PaletteToken = PaletteToken("slider_track", QColor(138, 138, 138), QColor(162, 162, 162))
+
+    # ── SpinBox colors (FluSpinBox) ──
+    spinbox_bg: PaletteToken = PaletteToken("spinbox_bg", QColor(255, 255, 255), QColor(62, 62, 62))
+    spinbox_bg_hover: PaletteToken = PaletteToken("spinbox_bg_hover", QColor(251, 251, 251), QColor(68, 68, 68))
+    spinbox_bg_focused: PaletteToken = PaletteToken("spinbox_bg_focused", QColor(255, 255, 255), QColor(36, 36, 36))
+    spinbox_bg_disabled: PaletteToken = PaletteToken("spinbox_bg_disabled", QColor(252, 252, 252), QColor(59, 59, 59))
+    spinbox_button_bg: PaletteToken = PaletteToken("spinbox_button_bg", QColor(232, 232, 232), QColor(56, 56, 56))
+    spinbox_button_hover: PaletteToken = PaletteToken("spinbox_button_hover", QColor(224, 224, 224), QColor(64, 64, 64))
+    spinbox_button_pressed: PaletteToken = PaletteToken("spinbox_button_pressed", QColor(216, 216, 216), QColor(72, 72, 72))
+    spinbox_border: PaletteToken = PaletteToken("spinbox_border", QColor(240, 240, 240), QColor(76, 76, 76))
+    spinbox_border_disabled: PaletteToken = PaletteToken("spinbox_border_disabled", QColor(237, 237, 237), QColor(73, 73, 73))
+
+    # ── InfoBar colors (FluInfoBar) ──
+    infobar_success: PaletteToken = PaletteToken("infobar_success", QColor(223, 246, 221), QColor(57, 61, 27))
+    infobar_warning: PaletteToken = PaletteToken("infobar_warning", QColor(255, 244, 206), QColor(67, 53, 25))
+    infobar_info: PaletteToken = PaletteToken("infobar_info", QColor(244, 244, 244), QColor(39, 39, 39))
+    infobar_error: PaletteToken = PaletteToken("infobar_error", QColor(253, 231, 233), QColor(68, 39, 38))
+
+    # ── Badge colors ──
+    badge_bg: PaletteToken = PaletteToken("badge_bg", QColor(255, 77, 79), QColor(255, 77, 79))
+
+    # ── RatingControl colors ──
+    rating_selected: PaletteToken = PaletteToken("rating_selected", QColor(0, 0, 0), QColor(255, 255, 255))
+
     def token(self, path: str) -> PaletteToken:
         parts = path.split(".")
         if len(parts) == 1:

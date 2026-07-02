@@ -47,6 +47,8 @@ from pyqt_fluent import (
     TimePicker,
     ToggleButton,
 )
+from pyqt_fluent.icons.engine import FluentIcon
+from pyqt_fluent.icons.widget import IconWidget
 from pyqt_fluent.utils.theme import Theme, system_theme
 
 
@@ -66,14 +68,14 @@ class Demo(ThemeAwareWidget, QWidget):
         from pyqt_fluent import CommandBar
 
         cmd = CommandBar()
-        cmd.add_action("New", callback=lambda: print("New"))
-        cmd.add_action("Open", callback=lambda: print("Open"))
-        cmd.add_action("Save", callback=lambda: print("Save"))
+        cmd.add_action("New", icon=FluentIcon.NEW, callback=lambda: print("New"))
+        cmd.add_action("Open", icon=FluentIcon.OPEN, callback=lambda: print("Open"))
+        cmd.add_action("Save", icon=FluentIcon.SAVE, callback=lambda: print("Save"))
         cmd.add_separator()
-        cmd.add_action("Undo", callback=lambda: print("Undo"))
-        cmd.add_action("Redo", callback=lambda: print("Redo"))
+        cmd.add_action("Undo", icon=FluentIcon.ARROW_UNDO, callback=lambda: print("Undo"))
+        cmd.add_action("Redo", icon=FluentIcon.ARROW_REDO, callback=lambda: print("Redo"))
         cmd.add_stretch()
-        cmd.add_action("About", callback=lambda: self._show_about())
+        cmd.add_action("Settings", icon=FluentIcon.SETTINGS, callback=lambda: print("Settings"))
         outer.addWidget(cmd)
 
         # ── Splitter: NavView | TabView ──
@@ -82,10 +84,11 @@ class Demo(ThemeAwareWidget, QWidget):
 
         # ── Sidebar ──
         self.nav = NavigationView()
-        self.nav.add_item("Controls")
-        self.nav.add_item("Status")
-        self.nav.add_item("Misc")
-        self.nav.add_item("About")
+        self.nav.add_item("Controls", icon=FluentIcon.HOME)
+        self.nav.add_item("Status", icon=FluentIcon.STATUS)
+        self.nav.add_item("Icons", icon=FluentIcon.ADD_SQUARE)
+        self.nav.add_item("Misc", icon=FluentIcon.SETTINGS)
+        self.nav.add_item("About", icon=FluentIcon.INFO)
         self.nav.set_current_index(0)
         self.nav.current_changed.connect(self._on_nav_changed)
         splitter.addWidget(self.nav)
@@ -230,6 +233,41 @@ class Demo(ThemeAwareWidget, QWidget):
         status_layout.addWidget(InfoBar("Operation successful!", "success"))
         status_layout.addWidget(InfoBar("Warning: check your input", "warning"))
         status_layout.addWidget(InfoBar("Error occurred", "danger"))
+
+        # ── Icons tab ──
+        icons_widget = QWidget()
+        icons_widget.setObjectName("tabIcons")
+        icons_layout = QVBoxLayout(icons_widget)
+        icons_layout.setSpacing(12)
+        icons_layout.setContentsMargins(16, 16, 16, 16)
+
+        scroll_ic = QScrollArea()
+        scroll_ic.setWidgetResizable(True)
+        scroll_ic.setFrameShape(QFrame.Shape.NoFrame)
+        scroll_ic.setWidget(icons_widget)
+        self.tabs.addTab(scroll_ic, "Icons")
+
+        icons_layout.addWidget(FluentLabel("Icons", "subtitle"))
+
+        cols = 8
+        icon_list = list(FluentIcon)
+        for i in range(0, len(icon_list), cols):
+            row_lay = QHBoxLayout()
+            for icon_enum in icon_list[i:i + cols]:
+                cell = QWidget()
+                cell_lay = QVBoxLayout(cell)
+                cell_lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                cell_lay.setSpacing(4)
+                iw = IconWidget(icon_name=icon_enum, size=28)
+                cell_lay.addWidget(iw)
+                lbl = QLabel(icon_enum.name.replace("_", " ").title())
+                lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                cell_lay.addWidget(lbl)
+                row_lay.addWidget(cell)
+            row_lay.addStretch()
+            icons_layout.addLayout(row_lay)
+
+        icons_layout.addStretch()
 
         # ── Misc tab ──
         self._misc_widget = QWidget()

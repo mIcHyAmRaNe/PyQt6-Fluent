@@ -2,8 +2,16 @@ from __future__ import annotations
 
 from PyQt6.QtCore import QRectF, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QPainter, QPainterPath, QPen
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QWidget
+from PyQt6.QtWidgets import (
+    QGraphicsDropShadowEffect,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QWidget,
+)
 
+from ...icons.engine import FluentIcon, IconEngine
 from ...tokens.theme import ThemeDefinition, ThemeManager
 from .._shared.theme_aware import ThemeAwareWidget
 
@@ -27,12 +35,13 @@ class InfoBar(ThemeAwareWidget, QWidget):
 
         self._bg = QColor()
         self._fg = QColor()
+        self._icon_color = QColor()
         self._custom_bg = QColor(bg_color) if bg_color else None
         self._custom_fg = QColor(fg_color) if fg_color else None
         self._border_color = QColor()
 
         self._layout = QHBoxLayout(self)
-        self._layout.setContentsMargins(12, 8, 8, 8)
+        self._layout.setContentsMargins(40, 8, 8, 8)
         self._layout.setSpacing(8)
 
         self._label = QLabel(text)
@@ -49,6 +58,13 @@ class InfoBar(ThemeAwareWidget, QWidget):
             self._layout.addWidget(self._close_btn)
 
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        # FluShadow: high-performance stacked border shadow
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(16)
+        shadow.setOffset(0, 4)
+        shadow.setColor(QColor(0, 0, 0, 51))
+        self.setGraphicsEffect(shadow)
 
         if duration > 0:
             self._timer = QTimer(self)
@@ -89,6 +105,26 @@ class InfoBar(ThemeAwareWidget, QWidget):
             self._close_btn.setStyleSheet(
                 f"color: {self._fg.name()}; background: transparent; border: none; font-size: 14px;"
             )
+
+        # Set icon based on severity
+        icon_map = {
+            "info": FluentIcon.INFO,
+            "success": FluentIcon.CHECKMARK_CIRCLE,
+            "warning": FluentIcon.WARNING,
+            "danger": FluentIcon.ALERT,
+        }
+        self._icon_severity = icon_map.get(self._severity, FluentIcon.INFO)
+
+        # Use severity-specific semantic color for the icon
+        icon_color_map = {
+            "info": "semantic.info",
+            "success": "semantic.success",
+            "warning": "semantic.warning",
+            "danger": "semantic.danger",
+        }
+        icon_color_token = icon_color_map.get(self._severity, "semantic.info")
+        self._icon_color = r.color(icon_color_token)
+
         self.update()
 
     def paintEvent(self, e):
@@ -106,3 +142,10 @@ class InfoBar(ThemeAwareWidget, QWidget):
         painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawPath(path)
+
+        # Paint icon
+        IconEngine.instance().render(
+            painter, QRectF(12, (self.height() - 20) / 2, 20, 20),
+            self._icon_severity, color=self._icon_color)
+
+        painter.end()

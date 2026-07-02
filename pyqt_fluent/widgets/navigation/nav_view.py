@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from ...icons.engine import FluentIcon, IconEngine
 from ...tokens.theme import ThemeDefinition
 from .._shared.theme_aware import ThemeAwareWidget
 
@@ -19,7 +20,7 @@ from .._shared.theme_aware import ThemeAwareWidget
 class NavItem(ThemeAwareWidget, QWidget):
     clicked = pyqtSignal(int)
 
-    def __init__(self, text: str, icon: str | None = None, index: int = 0, parent=None):
+    def __init__(self, text: str, icon: str | FluentIcon | None = None, index: int = 0, parent=None):
         super().__init__(parent)
         self._text = text
         self._icon_text = icon
@@ -163,16 +164,29 @@ class NavItem(ThemeAwareWidget, QWidget):
 
         label = self._icon_text or self._text[:2]
         if self._compact:
-            painter.drawText(rect, Qt.AlignmentFlag.AlignCenter, label)
+            if isinstance(self._icon_text, FluentIcon):
+                icon_size = 20
+                x = (rect.width() - icon_size) / 2
+                y = (rect.height() - icon_size) / 2
+                IconEngine.instance().render(
+                    painter, QRectF(x, y, icon_size, icon_size),
+                    self._icon_text, color=fg)
+            else:
+                painter.drawText(rect, Qt.AlignmentFlag.AlignCenter, label)
         else:
             icon_w = 0
             if self._icon_text:
-                icon_w = 24
-                painter.drawText(
-                    QRect(12, 0, icon_w, rect.height()),
-                    Qt.AlignmentFlag.AlignCenter,
-                    self._icon_text,
-                )
+                icon_w = 28
+                if isinstance(self._icon_text, FluentIcon):
+                    IconEngine.instance().render(
+                        painter, QRectF(12, (rect.height() - 20) / 2, 20, 20),
+                        self._icon_text, color=fg)
+                else:
+                    painter.drawText(
+                        QRect(12, 0, icon_w, rect.height()),
+                        Qt.AlignmentFlag.AlignCenter,
+                        self._icon_text,
+                    )
             text_x = 12 + icon_w + 8
             text_rect = QRect(text_x, 0, rect.width() - text_x - 12, rect.height())
             painter.drawText(
@@ -237,10 +251,19 @@ class NavigationView(ThemeAwareWidget, QWidget):
         self._header_layout.setContentsMargins(8, 0, 8, 0)
         self._header_layout.setSpacing(0)
 
-        self._toggle_btn = QPushButton("☰")
+        self._toggle_btn = QPushButton()
         self._toggle_btn.setFixedSize(32, 32)
         self._toggle_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self._toggle_btn.clicked.connect(self._toggle_collapse)
+
+        # Apply icon using icon engine
+        def paint_toggle(painter, rect):
+            IconEngine.instance().render(
+                painter, QRectF(rect).adjusted(8, 8, -8, -8),
+                FluentIcon.LINE_HORIZONTAL_3, color=self._fg)
+
+        self._toggle_btn.paintEvent = lambda e: paint_toggle(QPainter(self._toggle_btn), self._toggle_btn.rect())
+        self._toggle_btn.setStyleSheet("background: transparent; border: none;")
         self._header_layout.addWidget(self._toggle_btn)
 
         self._header_label = QLabel("Navigation")
@@ -377,7 +400,7 @@ NavigationView QScrollBar::sub-line:vertical {{
                 pill_accent=self._pill_accent,
             )
 
-    def add_item(self, text: str, icon: str | None = None) -> NavItem:
+    def add_item(self, text: str, icon: str | FluentIcon | None = None) -> NavItem:
         index = len(self._nav_items)
         item = NavItem(text, icon=icon, index=index, parent=self._scroll_content)
 

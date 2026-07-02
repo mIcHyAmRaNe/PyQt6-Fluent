@@ -87,14 +87,8 @@ class ThemeManager(QObject):
 
     def _apply_system_theme(self) -> None:
         try:
-            import winreg
-            key = winreg.OpenKey(
-                winreg.HKEY_CURRENT_USER,
-                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
-            )
-            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
-            winreg.CloseKey(key)
-            if value == 0:
+            from ..utils.theme import system_theme
+            if system_theme() == ThemeMode.DARK:
                 self.set_dark_theme()
         except Exception:
             pass
